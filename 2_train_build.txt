@@ -1,0 +1,33 @@
+--通过每10天一个滑动窗口构造训练集，第11天作为预测集
+--1.选取11.18-27的训练集
+create table cloud_user_train_clean_11_18
+as
+select *
+from cloud_user_train_clean
+where substr(time,1,10)>='2014-11-18'and substr(time,1,10)<='2014-11-27';
+--2.构造在时间区间内有交互行为的(user,item)对，根据接下来一天是否购买给样本标记0或1
+--以11.18-11.27为训练集，11.28是否购买为标记
+create table cloud_user_item_11_18
+as
+select distinct user_id,item_id
+from cloud_user_train_clean_11_18;
+
+create table cloud_user_item_11_18_isbuy
+as
+select a.user_id,a.item_id
+from cloud_user_item_11_18 a
+join
+(
+select distinct user_id,item_id
+from cloud_user_train_clean 
+where substr(time,1,10)='2014-11-28' and behavior_type=4 
+)b
+on a.user_id = b.user_id and a.item_id = b.item_id;
+
+create table cloud_user_item_11_18_label
+as
+select a.user_id,a.item_id,case when a.user_id = b.user_id and a.item_id = b.item_id then 1 else 0 end as label
+from cloud_user_item_11_18 a 
+left outer join cloud_user_item_11_18_isbuy b
+on a.user_id = b.user_id and a.item_id = b.item_id;
+

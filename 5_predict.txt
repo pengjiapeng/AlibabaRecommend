@@ -1,0 +1,3645 @@
+--通过每10天一个滑动窗口构造训练集，第11天作为预测集
+--1.选取11.18-27的训练集
+create table cloud_user_train_clean_12_09
+as
+select *
+from cloud_user_train_clean
+where substr(time,1,10)>='2014-12-09'and substr(time,1,10)<='2014-12-18';
+--2.构造在时间区间内有交互行为的(user,item)对，根据接下来一天是否购买给样本标记0或1
+--以11.18-11.27为训练集，11.28是否购买为标记
+create table cloud_user_item_12_09
+as
+select distinct user_id,item_id
+from cloud_user_train_clean_12_09;
+
+create table cloud_user_item_12_09_label
+as
+select a.user_id,a.item_id
+from cloud_user_item_12_09 a;
+
+--特征工程
+--1.用户商品特征
+--1.1统计11.18-11.27用户每1d的浏览/收藏/购物车/购买各个商品的行为次数
+--1.1.1统计统计11.18用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_1d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_1d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_1d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_1d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_1d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09'
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09'
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09'
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09'
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+select * from cloud_user_item_12_09_ui_feature_1d;
+
+--1.1.2统计统计11.19用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_2d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_2d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_2d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_2d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_2d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10'
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10'
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10'
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10'
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+--1.1.3统计统计11.20用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_3d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_3d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_3d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_3d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_3d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11'
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11'
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11'
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11'
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+--1.1.4统计统计11.21用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_4d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_4d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_4d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_4d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_4d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12'
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12'
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12'
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12'
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+--1.1.5统计统计11.22用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_5d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_5d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_5d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_5d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_5d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13'
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13'
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13'
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13'
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+--1.1.6统计统计11.23用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_6d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_6d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_6d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_6d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_6d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14'
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14'
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14'
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14'
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+--1.1.7统计统计11.24用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_7d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_7d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_7d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_7d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_7d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15'
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15'
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15'
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15'
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+--1.1.8统计统计11.25用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_8d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_8d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_8d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_8d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_8d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16'
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16'
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16'
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16'
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+--1.1.9统计统计11.26用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_9d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_9d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_9d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_9d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_9d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17'
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17'
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17'
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17'
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+--1.1.10统计统计11.27用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_10d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_10d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_10d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_10d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_10d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18'
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18'
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18'
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18'
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+--1.2统计11.18-11.27用户每3d的浏览/收藏/购物车/购买各个商品的行为次数
+--1.2.1统计统计11.18-11.20用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_1d_3d
+as
+select a.user_id,a.item_id,
+(b.ui_1d_action1+c.ui_2d_action1+d.ui_3d_action1) as ui_1d_3d_action1,
+(b.ui_1d_action2+c.ui_2d_action2+d.ui_3d_action2) as ui_1d_3d_action2,
+(b.ui_1d_action3+c.ui_2d_action3+d.ui_3d_action3) as ui_1d_3d_action3,
+(b.ui_1d_action4+c.ui_2d_action4+d.ui_3d_action4) as ui_1d_3d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_1d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_2d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_3d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.2统计统计11.19-11.21用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_2d_4d
+as
+select a.user_id,a.item_id,
+(b.ui_2d_action1+c.ui_3d_action1+d.ui_4d_action1) as ui_2d_4d_action1,
+(b.ui_2d_action2+c.ui_3d_action2+d.ui_4d_action2) as ui_2d_4d_action2,
+(b.ui_2d_action3+c.ui_3d_action3+d.ui_4d_action3) as ui_2d_4d_action3,
+(b.ui_2d_action4+c.ui_3d_action4+d.ui_4d_action4) as ui_2d_4d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_2d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_3d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_4d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.3统计统计11.20-11.22用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_3d_5d
+as
+select a.user_id,a.item_id,
+(b.ui_3d_action1+c.ui_4d_action1+d.ui_5d_action1) as ui_3d_5d_action1,
+(b.ui_3d_action2+c.ui_4d_action2+d.ui_5d_action2) as ui_3d_5d_action2,
+(b.ui_3d_action3+c.ui_4d_action3+d.ui_5d_action3) as ui_3d_5d_action3,
+(b.ui_3d_action4+c.ui_4d_action4+d.ui_5d_action4) as ui_3d_5d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_3d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_4d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_5d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.4统计统计11.21-11.23用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_4d_6d
+as
+select a.user_id,a.item_id,
+(b.ui_4d_action1+c.ui_5d_action1+d.ui_6d_action1) as ui_4d_6d_action1,
+(b.ui_4d_action2+c.ui_5d_action2+d.ui_6d_action2) as ui_4d_6d_action2,
+(b.ui_4d_action3+c.ui_5d_action3+d.ui_6d_action3) as ui_4d_6d_action3,
+(b.ui_4d_action4+c.ui_5d_action4+d.ui_6d_action4) as ui_4d_6d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_4d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_5d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_6d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.5统计统计11.22-11.24用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_5d_7d
+as
+select a.user_id,a.item_id,
+(b.ui_5d_action1+c.ui_6d_action1+d.ui_7d_action1) as ui_5d_7d_action1,
+(b.ui_5d_action2+c.ui_6d_action2+d.ui_7d_action2) as ui_5d_7d_action2,
+(b.ui_5d_action3+c.ui_6d_action3+d.ui_7d_action3) as ui_5d_7d_action3,
+(b.ui_5d_action4+c.ui_6d_action4+d.ui_7d_action4) as ui_5d_7d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_5d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_6d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_7d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.6统计统计11.23-11.25用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_6d_8d
+as
+select a.user_id,a.item_id,
+(b.ui_6d_action1+c.ui_7d_action1+d.ui_8d_action1) as ui_6d_8d_action1,
+(b.ui_6d_action2+c.ui_7d_action2+d.ui_8d_action2) as ui_6d_8d_action2,
+(b.ui_6d_action3+c.ui_7d_action3+d.ui_8d_action3) as ui_6d_8d_action3,
+(b.ui_6d_action4+c.ui_7d_action4+d.ui_8d_action4) as ui_6d_8d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_6d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_7d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_8d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.7统计统计11.24-11.26用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_7d_9d
+as
+select a.user_id,a.item_id,
+(b.ui_7d_action1+c.ui_8d_action1+d.ui_9d_action1) as ui_7d_9d_action1,
+(b.ui_7d_action2+c.ui_8d_action2+d.ui_9d_action2) as ui_7d_9d_action2,
+(b.ui_7d_action3+c.ui_8d_action3+d.ui_9d_action3) as ui_7d_9d_action3,
+(b.ui_7d_action4+c.ui_8d_action4+d.ui_9d_action4) as ui_7d_9d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_7d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_8d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_9d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.8统计统计11.25-11.27用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_8d_10d
+as
+select a.user_id,a.item_id,
+(b.ui_8d_action1+c.ui_9d_action1+d.ui_10d_action1) as ui_8d_10d_action1,
+(b.ui_8d_action2+c.ui_9d_action2+d.ui_10d_action2) as ui_8d_10d_action2,
+(b.ui_8d_action3+c.ui_9d_action3+d.ui_10d_action3) as ui_8d_10d_action3,
+(b.ui_8d_action4+c.ui_9d_action4+d.ui_10d_action4) as ui_8d_10d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_8d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_9d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_10d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.3统计11.18-11.27用户每5d的浏览/收藏/购物车/购买各个商品的行为次数
+--1.3.1统计统计11.18-11.22用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_1d_5d
+as
+select a.user_id,a.item_id,
+(b.ui_1d_action1+c.ui_2d_action1+d.ui_3d_action1+e.ui_4d_action1+f.ui_5d_action1) as ui_1d_5d_action1,
+(b.ui_1d_action2+c.ui_2d_action2+d.ui_3d_action2+e.ui_4d_action2+f.ui_5d_action2) as ui_1d_5d_action2,
+(b.ui_1d_action3+c.ui_2d_action3+d.ui_3d_action3+e.ui_4d_action3+f.ui_5d_action3) as ui_1d_5d_action3,
+(b.ui_1d_action4+c.ui_2d_action4+d.ui_3d_action4+e.ui_4d_action4+f.ui_5d_action4) as ui_1d_5d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_1d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_2d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_3d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_4d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_5d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.3.2统计统计11.19-11.23用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_2d_6d
+as
+select a.user_id,a.item_id,
+(b.ui_2d_action1+c.ui_3d_action1+d.ui_4d_action1+e.ui_5d_action1+f.ui_6d_action1) as ui_2d_6d_action1,
+(b.ui_2d_action2+c.ui_3d_action2+d.ui_4d_action2+e.ui_5d_action2+f.ui_6d_action2) as ui_2d_6d_action2,
+(b.ui_2d_action3+c.ui_3d_action3+d.ui_4d_action3+e.ui_5d_action3+f.ui_6d_action3) as ui_2d_6d_action3,
+(b.ui_2d_action4+c.ui_3d_action4+d.ui_4d_action4+e.ui_5d_action4+f.ui_6d_action4) as ui_2d_6d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_2d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_3d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_4d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_5d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_6d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.3.3统计统计11.20-11.24用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_3d_7d
+as
+select a.user_id,a.item_id,
+(b.ui_3d_action1+c.ui_4d_action1+d.ui_5d_action1+e.ui_6d_action1+f.ui_7d_action1) as ui_3d_7d_action1,
+(b.ui_3d_action2+c.ui_4d_action2+d.ui_5d_action2+e.ui_6d_action2+f.ui_7d_action2) as ui_3d_7d_action2,
+(b.ui_3d_action3+c.ui_4d_action3+d.ui_5d_action3+e.ui_6d_action3+f.ui_7d_action3) as ui_3d_7d_action3,
+(b.ui_3d_action4+c.ui_4d_action4+d.ui_5d_action4+e.ui_6d_action4+f.ui_7d_action4) as ui_3d_7d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_3d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_4d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_5d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_6d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_7d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.3.4统计统计11.21-11.25用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_4d_8d
+as
+select a.user_id,a.item_id,
+(b.ui_4d_action1+c.ui_5d_action1+d.ui_6d_action1+e.ui_7d_action1+f.ui_8d_action1) as ui_4d_8d_action1,
+(b.ui_4d_action2+c.ui_5d_action2+d.ui_6d_action2+e.ui_7d_action2+f.ui_8d_action2) as ui_4d_8d_action2,
+(b.ui_4d_action3+c.ui_5d_action3+d.ui_6d_action3+e.ui_7d_action3+f.ui_8d_action3) as ui_4d_8d_action3,
+(b.ui_4d_action4+c.ui_5d_action4+d.ui_6d_action4+e.ui_7d_action4+f.ui_8d_action4) as ui_4d_8d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_4d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_5d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_6d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_7d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_8d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.3.5统计统计11.22-11.26用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_5d_9d
+as
+select a.user_id,a.item_id,
+(b.ui_5d_action1+c.ui_6d_action1+d.ui_7d_action1+e.ui_8d_action1+f.ui_9d_action1) as ui_5d_9d_action1,
+(b.ui_5d_action2+c.ui_6d_action2+d.ui_7d_action2+e.ui_8d_action2+f.ui_9d_action2) as ui_5d_9d_action2,
+(b.ui_5d_action3+c.ui_6d_action3+d.ui_7d_action3+e.ui_8d_action3+f.ui_9d_action3) as ui_5d_9d_action3,
+(b.ui_5d_action4+c.ui_6d_action4+d.ui_7d_action4+e.ui_8d_action4+f.ui_9d_action4) as ui_5d_9d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_5d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_6d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_7d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_8d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_9d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.3.6统计统计11.23-11.27用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_6d_10d
+as
+select a.user_id,a.item_id,
+(b.ui_6d_action1+c.ui_7d_action1+d.ui_8d_action1+e.ui_9d_action1+f.ui_10d_action1) as ui_6d_10d_action1,
+(b.ui_6d_action2+c.ui_7d_action2+d.ui_8d_action2+e.ui_9d_action2+f.ui_10d_action2) as ui_6d_10d_action2,
+(b.ui_6d_action3+c.ui_7d_action3+d.ui_8d_action3+e.ui_9d_action3+f.ui_10d_action3) as ui_6d_10d_action3,
+(b.ui_6d_action4+c.ui_7d_action4+d.ui_8d_action4+e.ui_9d_action4+f.ui_10d_action4) as ui_6d_10d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_6d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_7d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_8d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_9d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_10d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.4统计11.18-11.27用户每7d的浏览/收藏/购物车/购买各个商品的行为次数
+--1.4.1统计统计11.18-11.24用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_1d_7d
+as
+select a.user_id,a.item_id,
+(b.ui_1d_action1+c.ui_2d_action1+d.ui_3d_action1+e.ui_4d_action1+f.ui_5d_action1+g.ui_6d_action1+h.ui_7d_action1) as ui_1d_7d_action1,
+(b.ui_1d_action2+c.ui_2d_action2+d.ui_3d_action2+e.ui_4d_action2+f.ui_5d_action2+g.ui_6d_action2+h.ui_7d_action2) as ui_1d_7d_action2,
+(b.ui_1d_action3+c.ui_2d_action3+d.ui_3d_action3+e.ui_4d_action3+f.ui_5d_action3+g.ui_6d_action3+h.ui_7d_action3) as ui_1d_7d_action3,
+(b.ui_1d_action4+c.ui_2d_action4+d.ui_3d_action4+e.ui_4d_action4+f.ui_5d_action4+g.ui_6d_action4+h.ui_7d_action4) as ui_1d_7d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_1d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_2d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_3d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_4d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_5d )f on a.user_id = f.user_id and a.item_id = f.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_6d )g on a.user_id = g.user_id and a.item_id = g.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_7d )h on a.user_id = h.user_id and a.item_id = h.item_id;
+
+--1.4.2统计统计11.19-11.25用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_2d_8d
+as
+select a.user_id,a.item_id,
+(b.ui_2d_action1+c.ui_3d_action1+d.ui_4d_action1+e.ui_5d_action1+f.ui_6d_action1+g.ui_7d_action1+h.ui_8d_action1) as ui_2d_8d_action1,
+(b.ui_2d_action2+c.ui_3d_action2+d.ui_4d_action2+e.ui_5d_action2+f.ui_6d_action2+g.ui_7d_action2+h.ui_8d_action2) as ui_2d_8d_action2,
+(b.ui_2d_action3+c.ui_3d_action3+d.ui_4d_action3+e.ui_5d_action3+f.ui_6d_action3+g.ui_7d_action3+h.ui_8d_action3) as ui_2d_8d_action3,
+(b.ui_2d_action4+c.ui_3d_action4+d.ui_4d_action4+e.ui_5d_action4+f.ui_6d_action4+g.ui_7d_action4+h.ui_8d_action4) as ui_2d_8d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_2d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_3d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_4d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_5d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_6d )f on a.user_id = f.user_id and a.item_id = f.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_7d )g on a.user_id = g.user_id and a.item_id = g.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_8d )h on a.user_id = h.user_id and a.item_id = h.item_id;
+
+--1.4.3统计统计11.20-11.26用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_3d_9d
+as
+select a.user_id,a.item_id,
+(b.ui_3d_action1+c.ui_4d_action1+d.ui_5d_action1+e.ui_6d_action1+f.ui_7d_action1+g.ui_8d_action1+h.ui_9d_action1) as ui_3d_9d_action1,
+(b.ui_3d_action2+c.ui_4d_action2+d.ui_5d_action2+e.ui_6d_action2+f.ui_7d_action2+g.ui_8d_action2+h.ui_9d_action2) as ui_3d_9d_action2,
+(b.ui_3d_action3+c.ui_4d_action3+d.ui_5d_action3+e.ui_6d_action3+f.ui_7d_action3+g.ui_8d_action3+h.ui_9d_action3) as ui_3d_9d_action3,
+(b.ui_3d_action4+c.ui_4d_action4+d.ui_5d_action4+e.ui_6d_action4+f.ui_7d_action4+g.ui_8d_action4+h.ui_9d_action4) as ui_3d_9d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_3d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_4d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_5d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_6d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_7d )f on a.user_id = f.user_id and a.item_id = f.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_8d )g on a.user_id = g.user_id and a.item_id = g.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_9d )h on a.user_id = h.user_id and a.item_id = h.item_id;
+
+--1.4.4统计统计11.21-11.27用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_4d_10d
+as
+select a.user_id,a.item_id,
+(b.ui_4d_action1+c.ui_5d_action1+d.ui_6d_action1+e.ui_7d_action1+f.ui_8d_action1+g.ui_9d_action1+h.ui_10d_action1) as ui_4d_10d_action1,
+(b.ui_4d_action2+c.ui_5d_action2+d.ui_6d_action2+e.ui_7d_action2+f.ui_8d_action2+g.ui_9d_action2+h.ui_10d_action2) as ui_4d_10d_action2,
+(b.ui_4d_action3+c.ui_5d_action3+d.ui_6d_action3+e.ui_7d_action3+f.ui_8d_action3+g.ui_9d_action3+h.ui_10d_action3) as ui_4d_10d_action3,
+(b.ui_4d_action4+c.ui_5d_action4+d.ui_6d_action4+e.ui_7d_action4+f.ui_8d_action4+g.ui_9d_action4+h.ui_10d_action4) as ui_4d_10d_action4
+from
+cloud_user_item_12_09_label a
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_4d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_12_09_ui_feature_5d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_6d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_7d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_8d )f on a.user_id = f.user_id and a.item_id = f.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_9d )g on a.user_id = g.user_id and a.item_id = g.item_id
+left outer join
+(select * from cloud_user_item_12_09_ui_feature_10d )h on a.user_id = h.user_id and a.item_id = h.item_id;
+
+--1.5统计11.18-11.27用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_12_09_ui_feature_1d_10d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_1d_10d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_1d_10d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_1d_10d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_1d_10d_action4
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+--2.用户特征
+--2.1统计11.18-11.27用户每1d四种行为的次数/商品数/商品类别数
+--2.1.1统计统计11.18用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_1d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_1d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_1d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_1d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_1d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_1d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_1d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_1d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_1d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_1d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_1d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_1d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_1d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.1.2统计统计11.19用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_2d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_2d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_2d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_2d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_2d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_2d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_2d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_2d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_2d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_2d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_2d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_2d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_2d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.1.3统计统计11.20用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_3d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_3d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_3d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_3d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_3d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_3d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_3d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_3d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_3d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_3d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_3d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_3d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_3d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.1.4统计统计11.21用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_4d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_4d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_4d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_4d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_4d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_4d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_4d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_4d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_4d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_4d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_4d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_4d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_4d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.1.5统计统计11.22用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_5d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_5d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_5d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_5d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_5d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_5d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_5d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_5d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_5d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_5d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_5d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_5d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_5d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.1.6统计统计11.23用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_6d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_6d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_6d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_6d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_6d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_6d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_6d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_6d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_6d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_6d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_6d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_6d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_6d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.1.7统计统计11.24用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_7d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_7d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_7d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_7d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_7d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_7d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_7d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_7d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_7d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_7d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_7d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_7d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_7d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.1.8统计统计11.25用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_8d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_8d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_8d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_8d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_8d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_8d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_8d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_8d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_8d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_8d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_8d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_8d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_8d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.1.9统计统计11.26用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_9d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_9d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_9d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_9d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_9d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_9d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_9d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_9d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_9d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_9d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_9d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_9d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_9d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.1.10统计统计11.27用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_10d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_10d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_10d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_10d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_10d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_10d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_10d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_10d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_10d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_10d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_10d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_10d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_10d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2统计11.18-11.27用户每3d四种行为的次数/商品数/商品类别数
+--2.2.1统计统计11.18-11.20用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_1d_3d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_1d_3d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_1d_3d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_1d_3d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_1d_3d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_1d_3d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_1d_3d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_1d_3d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_1d_3d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_1d_3d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_1d_3d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_1d_3d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_1d_3d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-11' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-11' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-11' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-11' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.2统计统计11.19-11.21用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_2d_4d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_2d_4d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_2d_4d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_2d_4d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_2d_4d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_2d_4d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_2d_4d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_2d_4d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_2d_4d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_2d_4d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_2d_4d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_2d_4d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_2d_4d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-12' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-12' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-12' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-12' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.3统计统计11.20-11.22用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_3d_5d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_3d_5d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_3d_5d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_3d_5d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_3d_5d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_3d_5d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_3d_5d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_3d_5d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_3d_5d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_3d_5d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_3d_5d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_3d_5d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_3d_5d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-13' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-13' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-13' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-13' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.4统计统计11.21-11.23用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_4d_6d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_4d_6d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_4d_6d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_4d_6d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_4d_6d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_4d_6d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_4d_6d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_4d_6d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_4d_6d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_4d_6d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_4d_6d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_4d_6d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_4d_6d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-14' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-14' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-14' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-14' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.5统计统计11.22-11.24用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_5d_7d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_5d_7d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_5d_7d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_5d_7d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_5d_7d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_5d_7d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_5d_7d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_5d_7d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_5d_7d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_5d_7d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_5d_7d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_5d_7d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_5d_7d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-15' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-15' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-15' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-15' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.6统计统计11.23-11.25用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_6d_8d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_6d_8d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_6d_8d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_6d_8d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_6d_8d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_6d_8d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_6d_8d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_6d_8d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_6d_8d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_6d_8d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_6d_8d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_6d_8d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_6d_8d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-16' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-16' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-16' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-16' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.7统计统计11.24-11.26用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_7d_9d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_7d_9d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_7d_9d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_7d_9d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_7d_9d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_7d_9d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_7d_9d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_7d_9d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_7d_9d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_7d_9d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_7d_9d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_7d_9d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_7d_9d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-15' and substr(time,1,10)<='2014-12-17' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-15' and substr(time,1,10)<='2014-12-17' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-15' and substr(time,1,10)<='2014-12-17' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-15' and substr(time,1,10)<='2014-12-17' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.8统计统计11.25-11.27用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_8d_10d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_8d_10d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_8d_10d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_8d_10d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_8d_10d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_8d_10d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_8d_10d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_8d_10d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_8d_10d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_8d_10d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_8d_10d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_8d_10d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_8d_10d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-16' and substr(time,1,10)<='2014-12-18' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-16' and substr(time,1,10)<='2014-12-18' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-16' and substr(time,1,10)<='2014-12-18' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-16' and substr(time,1,10)<='2014-12-18' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.3统计11.18-11.27用户每5d四种行为的次数/商品数/商品类别数
+--2.3.1统计统计11.18-11.22用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_1d_5d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_1d_5d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_1d_5d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_1d_5d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_1d_5d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_1d_5d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_1d_5d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_1d_5d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_1d_5d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_1d_5d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_1d_5d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_1d_5d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_1d_5d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-13' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-13' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-13' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-13' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.2统计统计11.19-11.23用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_2d_6d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_2d_6d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_2d_6d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_2d_6d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_2d_6d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_2d_6d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_2d_6d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_2d_6d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_2d_6d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_2d_6d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_2d_6d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_2d_6d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_2d_6d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-14' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-14' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-14' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-14' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.3统计统计11.20-11.24用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_3d_7d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_3d_7d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_3d_7d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_3d_7d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_3d_7d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_3d_7d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_3d_7d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_3d_7d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_3d_7d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_3d_7d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_3d_7d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_3d_7d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_3d_7d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-15' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-15' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-15' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-15' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.4统计统计11.21-11.25用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_4d_8d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_4d_8d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_4d_8d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_4d_8d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_4d_8d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_4d_8d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_4d_8d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_4d_8d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_4d_8d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_4d_8d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_4d_8d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_4d_8d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_4d_8d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-16' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-16' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-16' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-16' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.5统计统计11.22-11.26用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_5d_9d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_5d_9d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_5d_9d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_5d_9d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_5d_9d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_5d_9d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_5d_9d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_5d_9d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_5d_9d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_5d_9d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_5d_9d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_5d_9d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_5d_9d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-17' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-17' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-17' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-17' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.2.6统计统计11.23-11.27用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_6d_10d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_6d_10d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_6d_10d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_6d_10d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_6d_10d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_6d_10d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_6d_10d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_6d_10d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_6d_10d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_6d_10d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_6d_10d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_6d_10d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_6d_10d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-18' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-18' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-18' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-18' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.3统计11.18-11.27用户每7d四种行为的次数/商品数/商品类别数
+--2.3.1统计统计11.18-11.24用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_1d_7d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_1d_7d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_1d_7d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_1d_7d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_1d_7d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_1d_7d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_1d_7d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_1d_7d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_1d_7d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_1d_7d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_1d_7d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_1d_7d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_1d_7d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-15' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-15' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-15' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-15' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.3.2统计统计11.19-11.25用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_2d_8d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_2d_8d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_2d_8d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_2d_8d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_2d_8d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_2d_8d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_2d_8d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_2d_8d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_2d_8d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_2d_8d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_2d_8d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_2d_8d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_2d_8d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-16' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-16' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-16' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-16' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.3.3统计统计11.20-11.26用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_3d_9d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_3d_9d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_3d_9d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_3d_9d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_3d_9d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_3d_9d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_3d_9d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_3d_9d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_3d_9d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_3d_9d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_3d_9d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_3d_9d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_3d_9d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-17' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-17' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-17' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-17' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.3.4统计统计11.21-11.27用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_4d_10d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_4d_10d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_4d_10d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_4d_10d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_4d_10d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_4d_10d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_4d_10d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_4d_10d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_4d_10d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_4d_10d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_4d_10d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_4d_10d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_4d_10d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-18' and behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-18' and behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-18' and behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-18' and behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--2.4统计11.18-11.27用户四种行为的次数/商品数/商品类别数
+create table cloud_user_item_12_09_u_feature_1d_10d
+as
+select distinct a.user_id,
+case when b.action1 is null then 0 else b.action1 end as u_1d_10d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as u_1d_10d_action1_2,
+case when b.action3 is null then 0 else b.action3 end as u_1d_10d_action1_3,
+case when c.action1 is null then 0 else c.action1 end as u_1d_10d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as u_1d_10d_action2_2,
+case when c.action3 is null then 0 else c.action3 end as u_1d_10d_action2_3,
+case when d.action1 is null then 0 else d.action1 end as u_1d_10d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as u_1d_10d_action3_2,
+case when d.action3 is null then 0 else d.action3 end as u_1d_10d_action3_3,
+case when e.action1 is null then 0 else e.action1 end as u_1d_10d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as u_1d_10d_action4_2,
+case when e.action3 is null then 0 else e.action3 end as u_1d_10d_action4_3
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where behavior_type=1
+group by user_id)b 
+on a.user_id=b.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where behavior_type=2
+group by user_id)c 
+on a.user_id=c.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where behavior_type=3
+group by user_id)d 
+on a.user_id=d.user_id
+left outer join 
+(select user_id,count(*) as action1,count(distinct item_id) as action2,count(distinct item_category) as action3
+from cloud_user_train_clean_12_09 
+where behavior_type=4
+group by user_id)e 
+on a.user_id=e.user_id;
+
+--3.商品特征
+--3.1统计11.18-11.27商品每1d四种行为的次数/用户数
+--3.1.1统计统计11.18商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_1d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_1d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_1d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_1d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_1d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_1d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_1d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_1d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_1d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-09' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.1.2统计统计11.19商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_2d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_2d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_2d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_2d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_2d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_2d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_2d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_2d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_2d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-10' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.1.3统计统计11.20商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_3d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_3d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_3d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_3d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_3d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_3d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_3d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_3d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_3d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-11' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.1.4统计统计11.21商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_4d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_4d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_4d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_4d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_4d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_4d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_4d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_4d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_4d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-12' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.1.5统计统计11.22商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_5d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_5d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_5d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_5d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_5d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_5d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_5d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_5d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_5d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-13' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.1.6统计统计11.23商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_6d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_6d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_6d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_6d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_6d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_6d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_6d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_6d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_6d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-14' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.1.7统计统计11.24商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_7d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_7d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_7d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_7d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_7d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_7d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_7d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_7d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_7d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-15' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.1.8统计统计11.25商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_8d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_8d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_8d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_8d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_8d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_8d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_8d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_8d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_8d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-16' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.1.9统计统计11.26商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_9d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_9d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_9d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_9d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_9d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_9d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_9d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_9d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_9d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-17' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.1.10统计统计11.27商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_10d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_10d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_10d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_10d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_10d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_10d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_10d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_10d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_10d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)='2014-12-18' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.2统计11.18-11.27商品每3d四种行为的次数/用户数
+--3.2.1统计11.18-11.20商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_1d_3d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_1d_3d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_1d_3d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_1d_3d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_1d_3d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_1d_3d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_1d_3d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_1d_3d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_1d_3d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-11' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-11' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-11' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-11' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.2.2统计11.19-11.21商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_2d_4d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_2d_4d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_2d_4d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_2d_4d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_2d_4d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_2d_4d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_2d_4d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_2d_4d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_2d_4d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-12' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-12' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-12' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-12' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.2.3统计11.20-11.22商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_3d_5d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_3d_5d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_3d_5d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_3d_5d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_3d_5d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_3d_5d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_3d_5d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_3d_5d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_3d_5d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-13' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-13' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-13' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-13' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.2.4统计11.21-11.23商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_4d_6d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_4d_6d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_4d_6d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_4d_6d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_4d_6d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_4d_6d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_4d_6d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_4d_6d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_4d_6d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-14' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-14' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-14' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-14' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.2.5统计11.22-11.24商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_5d_7d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_5d_7d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_5d_7d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_5d_7d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_5d_7d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_5d_7d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_5d_7d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_5d_7d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_5d_7d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-15' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-15' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-15' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-15' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.2.6统计11.23-11.25商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_6d_8d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_6d_8d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_6d_8d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_6d_8d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_6d_8d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_6d_8d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_6d_8d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_6d_8d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_6d_8d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-16' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-16' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-16' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-16' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.2.7统计11.24-11.26商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_7d_9d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_7d_9d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_7d_9d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_7d_9d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_7d_9d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_7d_9d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_7d_9d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_7d_9d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_7d_9d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-15' and substr(time,1,10)<='2014-12-17' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-15' and substr(time,1,10)<='2014-12-17' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-15' and substr(time,1,10)<='2014-12-17' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-15' and substr(time,1,10)<='2014-12-17' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.2.8统计11.25-11.27商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_8d_10d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_8d_10d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_8d_10d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_8d_10d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_8d_10d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_8d_10d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_8d_10d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_8d_10d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_8d_10d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-16' and substr(time,1,10)<='2014-12-18' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-16' and substr(time,1,10)<='2014-12-18' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-16' and substr(time,1,10)<='2014-12-18' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-16' and substr(time,1,10)<='2014-12-18' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.3统计11.18-11.27商品每5d四种行为的次数/用户数
+--3.3.1统计11.18-11.22商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_1d_5d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_1d_5d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_1d_5d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_1d_5d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_1d_5d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_1d_5d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_1d_5d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_1d_5d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_1d_5d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-13' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-13' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-13' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-13' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.3.2统计11.19-11.23商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_2d_6d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_2d_6d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_2d_6d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_2d_6d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_2d_6d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_2d_6d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_2d_6d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_2d_6d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_2d_6d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-14' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-14' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-14' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-14' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.3.3统计11.20-11.24商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_3d_7d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_3d_7d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_3d_7d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_3d_7d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_3d_7d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_3d_7d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_3d_7d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_3d_7d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_3d_7d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-15' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-15' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-15' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-15' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.3.4统计11.21-11.25商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_4d_8d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_4d_8d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_4d_8d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_4d_8d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_4d_8d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_4d_8d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_4d_8d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_4d_8d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_4d_8d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-16' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-16' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-16' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-16' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.3.5统计11.22-11.26商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_5d_9d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_5d_9d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_5d_9d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_5d_9d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_5d_9d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_5d_9d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_5d_9d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_5d_9d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_5d_9d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-17' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-17' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-17' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-13' and substr(time,1,10)<='2014-12-17' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.3.6统计11.23-11.27商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_6d_10d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_6d_10d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_6d_10d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_6d_10d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_6d_10d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_6d_10d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_6d_10d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_6d_10d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_6d_10d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-18' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-18' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-18' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-14' and substr(time,1,10)<='2014-12-18' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.4统计11.18-11.27商品每5d四种行为的次数/用户数
+--3.4.1统计11.18-11.24商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_1d_7d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_1d_7d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_1d_7d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_1d_7d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_1d_7d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_1d_7d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_1d_7d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_1d_7d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_1d_7d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-15' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-15' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-15' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-09' and substr(time,1,10)<='2014-12-15' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.4.2统计11.19-11.25商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_2d_8d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_2d_8d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_2d_8d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_2d_8d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_2d_8d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_2d_8d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_2d_8d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_2d_8d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_2d_8d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-16' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-16' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-16' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-10' and substr(time,1,10)<='2014-12-16' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.4.3统计11.20-11.26商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_3d_9d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_3d_9d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_3d_9d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_3d_9d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_3d_9d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_3d_9d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_3d_9d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_3d_9d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_3d_9d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-17' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-17' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-17' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-11' and substr(time,1,10)<='2014-12-17' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.4.4统计11.21-11.27商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_4d_10d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_4d_10d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_4d_10d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_4d_10d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_4d_10d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_4d_10d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_4d_10d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_4d_10d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_4d_10d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-18' and behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-18' and behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-18' and behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where substr(time,1,10)>='2014-12-12' and substr(time,1,10)<='2014-12-18' and behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+
+--3.5统计11.18-11.27商品四种行为的次数/用户数
+create table cloud_user_item_12_09_i_feature_1d_10d
+as
+select distinct a.item_id,
+case when b.action1 is null then 0 else b.action1 end as i_1d_10d_action1_1,
+case when b.action2 is null then 0 else b.action2 end as i_1d_10d_action1_2,
+case when c.action1 is null then 0 else c.action1 end as i_1d_10d_action2_1,
+case when c.action2 is null then 0 else c.action2 end as i_1d_10d_action2_2,
+case when d.action1 is null then 0 else d.action1 end as i_1d_10d_action3_1,
+case when d.action2 is null then 0 else d.action2 end as i_1d_10d_action3_2,
+case when e.action1 is null then 0 else e.action1 end as i_1d_10d_action4_1,
+case when e.action2 is null then 0 else e.action2 end as i_1d_10d_action4_2
+from
+cloud_user_item_12_09_label a 
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where behavior_type=1
+group by item_id)b 
+on a.item_id=b.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where behavior_type=2
+group by item_id)c 
+on a.item_id=c.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where behavior_type=3
+group by item_id)d 
+on a.item_id=d.item_id
+left outer join 
+(select item_id,count(*) as action1,count(distinct user_id) as action2
+from cloud_user_train_clean_12_09 
+where behavior_type=4
+group by item_id)e 
+on a.item_id=e.item_id;
+--3.排序特征
+--11.18-11.27
+--用户浏览同一种类的商品浏览次数排名
+--用户加购物车同一种类的商品浏览次数排名
+--用户购买同一种类的商品浏览次数排名
+--同一用户上述交互次数总数排名
+create table cloud_user_item_12_09_ui_feature_1d_10d_rank
+as
+select a.user_id,a.item_id,a.item_category,
+case when b.action1 is null then 0 else b.action1 end as action1,
+case when c.action2 is null then 0 else c.action2 end as action2,
+case when d.action3 is null then 0 else d.action3 end as action3,
+case when e.action4 is null then 0 else e.action4 end as action4
+from 
+(select distinct user_id,item_id,item_category from cloud_user_train_clean_12_09)a
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_12_09 
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_12_09 
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_12_09 
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_12_09 
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+create table cloud_user_item_12_09_ui_rank1_feature
+as
+select user_id,item_id,
+dense_rank() over(partition by item_category order by action1 desc) as action1_rank,
+dense_rank() over(partition by item_category order by action3 desc) as action3_rank,
+dense_rank() over(partition by item_category order by action4 desc) as action4_rank,
+dense_rank() over(partition by item_category order by (action1+action3+action4) desc) as sum_rank
+from cloud_user_item_12_09_ui_feature_1d_10d_rank;
+
+--特征整合
+--1.1
+create table cloud_train_1209_1218_1
+as
+select a.*,
+b1.ui_1d_action1,b1.ui_1d_action2,b1.ui_1d_action3,b1.ui_1d_action4,
+b2.ui_2d_action1,b2.ui_2d_action2,b2.ui_2d_action3,b2.ui_2d_action4,
+b3.ui_3d_action1,b3.ui_3d_action2,b3.ui_3d_action3,b3.ui_3d_action4,
+b4.ui_4d_action1,b4.ui_4d_action2,b4.ui_4d_action3,b4.ui_4d_action4,
+b5.ui_5d_action1,b5.ui_5d_action2,b5.ui_5d_action3,b5.ui_5d_action4,
+b6.ui_6d_action1,b6.ui_6d_action2,b6.ui_6d_action3,b6.ui_6d_action4,
+b7.ui_7d_action1,b7.ui_7d_action2,b7.ui_7d_action3,b7.ui_7d_action4,
+b8.ui_8d_action1,b8.ui_8d_action2,b8.ui_8d_action3,b8.ui_8d_action4,
+b9.ui_9d_action1,b9.ui_9d_action2,b9.ui_9d_action3,b9.ui_9d_action4,
+b10.ui_10d_action1,b10.ui_10d_action2,b10.ui_10d_action3,b10.ui_10d_action4
+from cloud_user_item_12_09_label a
+left outer join cloud_user_item_12_09_ui_feature_1d b1
+on a.user_id=b1.user_id and a.item_id=b1.item_id
+left outer join cloud_user_item_12_09_ui_feature_2d b2
+on a.user_id=b2.user_id and a.item_id=b2.item_id
+left outer join cloud_user_item_12_09_ui_feature_3d b3
+on a.user_id=b3.user_id and a.item_id=b3.item_id
+left outer join cloud_user_item_12_09_ui_feature_4d b4
+on a.user_id=b4.user_id and a.item_id=b4.item_id
+left outer join cloud_user_item_12_09_ui_feature_5d b5
+on a.user_id=b5.user_id and a.item_id=b5.item_id
+left outer join cloud_user_item_12_09_ui_feature_6d b6
+on a.user_id=b6.user_id and a.item_id=b6.item_id
+left outer join cloud_user_item_12_09_ui_feature_7d b7
+on a.user_id=b7.user_id and a.item_id=b7.item_id
+left outer join cloud_user_item_12_09_ui_feature_8d b8
+on a.user_id=b8.user_id and a.item_id=b8.item_id
+left outer join cloud_user_item_12_09_ui_feature_9d b9
+on a.user_id=b9.user_id and a.item_id=b9.item_id
+left outer join cloud_user_item_12_09_ui_feature_10d b10
+on a.user_id=b10.user_id and a.item_id=b10.item_id;
+
+--1.2
+create table cloud_train_1209_1218_2
+as
+select a.*,
+c1.ui_1d_3d_action1,c1.ui_1d_3d_action2,c1.ui_1d_3d_action3,c1.ui_1d_3d_action4,
+c2.ui_2d_4d_action1,c2.ui_2d_4d_action2,c2.ui_2d_4d_action3,c2.ui_2d_4d_action4,
+c3.ui_3d_5d_action1,c3.ui_3d_5d_action2,c3.ui_3d_5d_action3,c3.ui_3d_5d_action4,
+c4.ui_4d_6d_action1,c4.ui_4d_6d_action2,c4.ui_4d_6d_action3,c4.ui_4d_6d_action4,
+c5.ui_5d_7d_action1,c5.ui_5d_7d_action2,c5.ui_5d_7d_action3,c5.ui_5d_7d_action4,
+c6.ui_6d_8d_action1,c6.ui_6d_8d_action2,c6.ui_6d_8d_action3,c6.ui_6d_8d_action4,
+c7.ui_7d_9d_action1,c7.ui_7d_9d_action2,c7.ui_7d_9d_action3,c7.ui_7d_9d_action4,
+c8.ui_8d_10d_action1,c8.ui_8d_10d_action2,c8.ui_8d_10d_action3,c8.ui_8d_10d_action4
+from cloud_user_item_12_09_label a
+left outer join cloud_user_item_12_09_ui_feature_1d_3d c1
+on a.user_id=c1.user_id and a.item_id=c1.item_id
+left outer join cloud_user_item_12_09_ui_feature_2d_4d c2
+on a.user_id=c2.user_id and a.item_id=c2.item_id
+left outer join cloud_user_item_12_09_ui_feature_3d_5d c3
+on a.user_id=c3.user_id and a.item_id=c3.item_id
+left outer join cloud_user_item_12_09_ui_feature_4d_6d c4
+on a.user_id=c4.user_id and a.item_id=c4.item_id
+left outer join cloud_user_item_12_09_ui_feature_5d_7d c5
+on a.user_id=c5.user_id and a.item_id=c5.item_id
+left outer join cloud_user_item_12_09_ui_feature_6d_8d c6
+on a.user_id=c6.user_id and a.item_id=c6.item_id
+left outer join cloud_user_item_12_09_ui_feature_7d_9d c7
+on a.user_id=c7.user_id and a.item_id=c7.item_id
+left outer join cloud_user_item_12_09_ui_feature_8d_10d c8
+on a.user_id=c8.user_id and a.item_id=c8.item_id;
+
+--1.3
+create table cloud_train_1209_1218_3
+as
+select a.*,
+d1.ui_1d_5d_action1,d1.ui_1d_5d_action2,d1.ui_1d_5d_action3,d1.ui_1d_5d_action4,
+d2.ui_2d_6d_action1,d2.ui_2d_6d_action2,d2.ui_2d_6d_action3,d2.ui_2d_6d_action4,
+d3.ui_3d_7d_action1,d3.ui_3d_7d_action2,d3.ui_3d_7d_action3,d3.ui_3d_7d_action4,
+d4.ui_4d_8d_action1,d4.ui_4d_8d_action2,d4.ui_4d_8d_action3,d4.ui_4d_8d_action4,
+d5.ui_5d_9d_action1,d5.ui_5d_9d_action2,d5.ui_5d_9d_action3,d5.ui_5d_9d_action4,
+d6.ui_6d_10d_action1,d6.ui_6d_10d_action2,d6.ui_6d_10d_action3,d6.ui_6d_10d_action4,
+e1.ui_1d_7d_action1,e1.ui_1d_7d_action2,e1.ui_1d_7d_action3,e1.ui_1d_7d_action4,
+e2.ui_2d_8d_action1,e2.ui_2d_8d_action2,e2.ui_2d_8d_action3,e2.ui_2d_8d_action4,
+e3.ui_3d_9d_action1,e3.ui_3d_9d_action2,e3.ui_3d_9d_action3,e3.ui_3d_9d_action4,
+e4.ui_4d_10d_action1,e4.ui_4d_10d_action2,e4.ui_4d_10d_action3,e4.ui_4d_10d_action4,
+f1.ui_1d_10d_action1,f1.ui_1d_10d_action2,f1.ui_1d_10d_action3,f1.ui_1d_10d_action4
+from cloud_user_item_12_09_label a
+left outer join cloud_user_item_12_09_ui_feature_1d_5d d1
+on a.user_id=d1.user_id and a.item_id=d1.item_id
+left outer join cloud_user_item_12_09_ui_feature_2d_6d d2
+on a.user_id=d2.user_id and a.item_id=d2.item_id
+left outer join cloud_user_item_12_09_ui_feature_3d_7d d3
+on a.user_id=d3.user_id and a.item_id=d3.item_id
+left outer join cloud_user_item_12_09_ui_feature_4d_8d d4
+on a.user_id=d4.user_id and a.item_id=d4.item_id
+left outer join cloud_user_item_12_09_ui_feature_5d_9d d5
+on a.user_id=d5.user_id and a.item_id=d5.item_id
+left outer join cloud_user_item_12_09_ui_feature_6d_10d d6
+on a.user_id=d6.user_id and a.item_id=d6.item_id
+left outer join cloud_user_item_12_09_ui_feature_1d_7d e1
+on a.user_id=e1.user_id and a.item_id=e1.item_id
+left outer join cloud_user_item_12_09_ui_feature_2d_8d e2
+on a.user_id=e2.user_id and a.item_id=e2.item_id
+left outer join cloud_user_item_12_09_ui_feature_3d_9d e3
+on a.user_id=e3.user_id and a.item_id=e3.item_id
+left outer join cloud_user_item_12_09_ui_feature_4d_10d e4
+on a.user_id=e4.user_id and a.item_id=e4.item_id
+left outer join cloud_user_item_12_09_ui_feature_1d_10d f1
+on a.user_id=f1.user_id and a.item_id=f1.item_id;
+
+--特征整合
+--2.1
+create table cloud_train_1209_1218_4
+as
+select a.*,
+b1.u_1d_action1_1,b1.u_1d_action1_2,b1.u_1d_action1_3,b1.u_1d_action2_1,b1.u_1d_action2_2,b1.u_1d_action2_3,b1.u_1d_action3_1,b1.u_1d_action3_2,b1.u_1d_action3_3,b1.u_1d_action4_1,b1.u_1d_action4_2,b1.u_1d_action4_3,
+b2.u_2d_action1_1,b2.u_2d_action1_2,b2.u_2d_action1_3,b2.u_2d_action2_1,b2.u_2d_action2_2,b2.u_2d_action2_3,b2.u_2d_action3_1,b2.u_2d_action3_2,b2.u_2d_action3_3,b2.u_2d_action4_1,b2.u_2d_action4_2,b2.u_2d_action4_3,
+b3.u_3d_action1_1,b3.u_3d_action1_2,b3.u_3d_action1_3,b3.u_3d_action2_1,b3.u_3d_action2_2,b3.u_3d_action2_3,b3.u_3d_action3_1,b3.u_3d_action3_2,b3.u_3d_action3_3,b3.u_3d_action4_1,b3.u_3d_action4_2,b3.u_3d_action4_3,
+b4.u_4d_action1_1,b4.u_4d_action1_2,b4.u_4d_action1_3,b4.u_4d_action2_1,b4.u_4d_action2_2,b4.u_4d_action2_3,b4.u_4d_action3_1,b4.u_4d_action3_2,b4.u_4d_action3_3,b4.u_4d_action4_1,b4.u_4d_action4_2,b4.u_4d_action4_3,
+b5.u_5d_action1_1,b5.u_5d_action1_2,b5.u_5d_action1_3,b5.u_5d_action2_1,b5.u_5d_action2_2,b5.u_5d_action2_3,b5.u_5d_action3_1,b5.u_5d_action3_2,b5.u_5d_action3_3,b5.u_5d_action4_1,b5.u_5d_action4_2,b5.u_5d_action4_3,
+b6.u_6d_action1_1,b6.u_6d_action1_2,b6.u_6d_action1_3,b6.u_6d_action2_1,b6.u_6d_action2_2,b6.u_6d_action2_3,b6.u_6d_action3_1,b6.u_6d_action3_2,b6.u_6d_action3_3,b6.u_6d_action4_1,b6.u_6d_action4_2,b6.u_6d_action4_3,
+b7.u_7d_action1_1,b7.u_7d_action1_2,b7.u_7d_action1_3,b7.u_7d_action2_1,b7.u_7d_action2_2,b7.u_7d_action2_3,b7.u_7d_action3_1,b7.u_7d_action3_2,b7.u_7d_action3_3,b7.u_7d_action4_1,b7.u_7d_action4_2,b7.u_7d_action4_3,
+b8.u_8d_action1_1,b8.u_8d_action1_2,b8.u_8d_action1_3,b8.u_8d_action2_1,b8.u_8d_action2_2,b8.u_8d_action2_3,b8.u_8d_action3_1,b8.u_8d_action3_2,b8.u_8d_action3_3,b8.u_8d_action4_1,b8.u_8d_action4_2,b8.u_8d_action4_3,
+b9.u_9d_action1_1,b9.u_9d_action1_2,b9.u_9d_action1_3,b9.u_9d_action2_1,b9.u_9d_action2_2,b9.u_9d_action2_3,b9.u_9d_action3_1,b9.u_9d_action3_2,b9.u_9d_action3_3,b9.u_9d_action4_1,b9.u_9d_action4_2,b9.u_9d_action4_3,
+b10.u_10d_action1_1,b10.u_10d_action1_2,b10.u_10d_action1_3,b10.u_10d_action2_1,b10.u_10d_action2_2,b10.u_10d_action2_3,b10.u_10d_action3_1,b10.u_10d_action3_2,b10.u_10d_action3_3,b10.u_10d_action4_1,b10.u_10d_action4_2,b10.u_10d_action4_3
+from cloud_user_item_12_09_label a
+left outer join cloud_user_item_12_09_u_feature_1d b1
+on a.user_id=b1.user_id 
+left outer join cloud_user_item_12_09_u_feature_2d b2
+on a.user_id=b2.user_id
+left outer join cloud_user_item_12_09_u_feature_3d b3
+on a.user_id=b3.user_id
+left outer join cloud_user_item_12_09_u_feature_4d b4
+on a.user_id=b4.user_id 
+left outer join cloud_user_item_12_09_u_feature_5d b5
+on a.user_id=b5.user_id 
+left outer join cloud_user_item_12_09_u_feature_6d b6
+on a.user_id=b6.user_id
+left outer join cloud_user_item_12_09_u_feature_7d b7
+on a.user_id=b7.user_id 
+left outer join cloud_user_item_12_09_u_feature_8d b8
+on a.user_id=b8.user_id 
+left outer join cloud_user_item_12_09_u_feature_9d b9
+on a.user_id=b9.user_id 
+left outer join cloud_user_item_12_09_u_feature_10d b10
+on a.user_id=b10.user_id;
+
+--2.2
+create table cloud_train_1209_1218_5
+as
+select a.*,
+c1.u_1d_3d_action1_1,c1.u_1d_3d_action1_2,c1.u_1d_3d_action1_3,c1.u_1d_3d_action2_1,c1.u_1d_3d_action2_2,c1.u_1d_3d_action2_3,c1.u_1d_3d_action3_1,c1.u_1d_3d_action3_2,c1.u_1d_3d_action3_3,c1.u_1d_3d_action4_1,c1.u_1d_3d_action4_2,c1.u_1d_3d_action4_3,
+c2.u_2d_4d_action1_1,c2.u_2d_4d_action1_2,c2.u_2d_4d_action1_3,c2.u_2d_4d_action2_1,c2.u_2d_4d_action2_2,c2.u_2d_4d_action2_3,c2.u_2d_4d_action3_1,c2.u_2d_4d_action3_2,c2.u_2d_4d_action3_3,c2.u_2d_4d_action4_1,c2.u_2d_4d_action4_2,c2.u_2d_4d_action4_3,
+c3.u_3d_5d_action1_1,c3.u_3d_5d_action1_2,c3.u_3d_5d_action1_3,c3.u_3d_5d_action2_1,c3.u_3d_5d_action2_2,c3.u_3d_5d_action2_3,c3.u_3d_5d_action3_1,c3.u_3d_5d_action3_2,c3.u_3d_5d_action3_3,c3.u_3d_5d_action4_1,c3.u_3d_5d_action4_2,c3.u_3d_5d_action4_3,
+c4.u_4d_6d_action1_1,c4.u_4d_6d_action1_2,c4.u_4d_6d_action1_3,c4.u_4d_6d_action2_1,c4.u_4d_6d_action2_2,c4.u_4d_6d_action2_3,c4.u_4d_6d_action3_1,c4.u_4d_6d_action3_2,c4.u_4d_6d_action3_3,c4.u_4d_6d_action4_1,c4.u_4d_6d_action4_2,c4.u_4d_6d_action4_3,
+c5.u_5d_7d_action1_1,c5.u_5d_7d_action1_2,c5.u_5d_7d_action1_3,c5.u_5d_7d_action2_1,c5.u_5d_7d_action2_2,c5.u_5d_7d_action2_3,c5.u_5d_7d_action3_1,c5.u_5d_7d_action3_2,c5.u_5d_7d_action3_3,c5.u_5d_7d_action4_1,c5.u_5d_7d_action4_2,c5.u_5d_7d_action4_3,
+c6.u_6d_8d_action1_1,c6.u_6d_8d_action1_2,c6.u_6d_8d_action1_3,c6.u_6d_8d_action2_1,c6.u_6d_8d_action2_2,c6.u_6d_8d_action2_3,c6.u_6d_8d_action3_1,c6.u_6d_8d_action3_2,c6.u_6d_8d_action3_3,c6.u_6d_8d_action4_1,c6.u_6d_8d_action4_2,c6.u_6d_8d_action4_3,
+c7.u_7d_9d_action1_1,c7.u_7d_9d_action1_2,c7.u_7d_9d_action1_3,c7.u_7d_9d_action2_1,c7.u_7d_9d_action2_2,c7.u_7d_9d_action2_3,c7.u_7d_9d_action3_1,c7.u_7d_9d_action3_2,c7.u_7d_9d_action3_3,c7.u_7d_9d_action4_1,c7.u_7d_9d_action4_2,c7.u_7d_9d_action4_3,
+c8.u_8d_10d_action1_1,c8.u_8d_10d_action1_2,c8.u_8d_10d_action1_3,c8.u_8d_10d_action2_1,c8.u_8d_10d_action2_2,c8.u_8d_10d_action2_3,c8.u_8d_10d_action3_1,c8.u_8d_10d_action3_2,c8.u_8d_10d_action3_3,c8.u_8d_10d_action4_1,c8.u_8d_10d_action4_2,c8.u_8d_10d_action4_3
+from cloud_user_item_12_09_label a
+left outer join cloud_user_item_12_09_u_feature_1d_3d c1
+on a.user_id=c1.user_id 
+left outer join cloud_user_item_12_09_u_feature_2d_4d c2
+on a.user_id=c2.user_id 
+left outer join cloud_user_item_12_09_u_feature_3d_5d c3
+on a.user_id=c3.user_id 
+left outer join cloud_user_item_12_09_u_feature_4d_6d c4
+on a.user_id=c4.user_id 
+left outer join cloud_user_item_12_09_u_feature_5d_7d c5
+on a.user_id=c5.user_id 
+left outer join cloud_user_item_12_09_u_feature_6d_8d c6
+on a.user_id=c6.user_id 
+left outer join cloud_user_item_12_09_u_feature_7d_9d c7
+on a.user_id=c7.user_id 
+left outer join cloud_user_item_12_09_u_feature_8d_10d c8
+on a.user_id=c8.user_id;
+
+--2.3
+create table cloud_train_1209_1218_6
+as
+select a.*,
+d1.u_1d_5d_action1_1,d1.u_1d_5d_action2_1,d1.u_1d_5d_action3_1,d1.u_1d_5d_action4_1,d1.u_1d_5d_action1_2,d1.u_1d_5d_action2_2,d1.u_1d_5d_action3_2,d1.u_1d_5d_action4_2,d1.u_1d_5d_action1_3,d1.u_1d_5d_action2_3,d1.u_1d_5d_action3_3,d1.u_1d_5d_action4_3,
+d2.u_2d_6d_action1_1,d2.u_2d_6d_action2_1,d2.u_2d_6d_action3_1,d2.u_2d_6d_action4_1,d2.u_2d_6d_action1_2,d2.u_2d_6d_action2_2,d2.u_2d_6d_action3_2,d2.u_2d_6d_action4_2,d2.u_2d_6d_action1_3,d2.u_2d_6d_action2_3,d2.u_2d_6d_action3_3,d2.u_2d_6d_action4_3,
+d3.u_3d_7d_action1_1,d3.u_3d_7d_action2_1,d3.u_3d_7d_action3_1,d3.u_3d_7d_action4_1,d3.u_3d_7d_action1_2,d3.u_3d_7d_action2_2,d3.u_3d_7d_action3_2,d3.u_3d_7d_action4_2,d3.u_3d_7d_action1_3,d3.u_3d_7d_action2_3,d3.u_3d_7d_action3_3,d3.u_3d_7d_action4_3,
+d4.u_4d_8d_action1_1,d4.u_4d_8d_action2_1,d4.u_4d_8d_action3_1,d4.u_4d_8d_action4_1,d4.u_4d_8d_action1_2,d4.u_4d_8d_action2_2,d4.u_4d_8d_action3_2,d4.u_4d_8d_action4_2,d4.u_4d_8d_action1_3,d4.u_4d_8d_action2_3,d4.u_4d_8d_action3_3,d4.u_4d_8d_action4_3,
+d5.u_5d_9d_action1_1,d5.u_5d_9d_action2_1,d5.u_5d_9d_action3_1,d5.u_5d_9d_action4_1,d5.u_5d_9d_action1_2,d5.u_5d_9d_action2_2,d5.u_5d_9d_action3_2,d5.u_5d_9d_action4_2,d5.u_5d_9d_action1_3,d5.u_5d_9d_action2_3,d5.u_5d_9d_action3_3,d5.u_5d_9d_action4_3,
+d6.u_6d_10d_action1_1,d6.u_6d_10d_action2_1,d6.u_6d_10d_action3_1,d6.u_6d_10d_action4_1,d6.u_6d_10d_action1_2,d6.u_6d_10d_action2_2,d6.u_6d_10d_action3_2,d6.u_6d_10d_action4_2,d6.u_6d_10d_action1_3,d6.u_6d_10d_action2_3,d6.u_6d_10d_action3_3,d6.u_6d_10d_action4_3,
+e1.u_1d_7d_action1_1,e1.u_1d_7d_action2_1,e1.u_1d_7d_action3_1,e1.u_1d_7d_action4_1,e1.u_1d_7d_action1_2,e1.u_1d_7d_action2_2,e1.u_1d_7d_action3_2,e1.u_1d_7d_action4_2,e1.u_1d_7d_action1_3,e1.u_1d_7d_action2_3,e1.u_1d_7d_action3_3,e1.u_1d_7d_action4_3,
+e2.u_2d_8d_action1_1,e2.u_2d_8d_action2_1,e2.u_2d_8d_action3_1,e2.u_2d_8d_action4_1,e2.u_2d_8d_action1_2,e2.u_2d_8d_action2_2,e2.u_2d_8d_action3_2,e2.u_2d_8d_action4_2,e2.u_2d_8d_action1_3,e2.u_2d_8d_action2_3,e2.u_2d_8d_action3_3,e2.u_2d_8d_action4_3,
+e3.u_3d_9d_action1_1,e3.u_3d_9d_action2_1,e3.u_3d_9d_action3_1,e3.u_3d_9d_action4_1,e3.u_3d_9d_action1_2,e3.u_3d_9d_action2_2,e3.u_3d_9d_action3_2,e3.u_3d_9d_action4_2,e3.u_3d_9d_action1_3,e3.u_3d_9d_action2_3,e3.u_3d_9d_action3_3,e3.u_3d_9d_action4_3,
+e4.u_4d_10d_action1_1,e4.u_4d_10d_action2_1,e4.u_4d_10d_action3_1,e4.u_4d_10d_action4_1,e4.u_4d_10d_action1_2,e4.u_4d_10d_action2_2,e4.u_4d_10d_action3_2,e4.u_4d_10d_action4_2,e4.u_4d_10d_action1_3,e4.u_4d_10d_action2_3,e4.u_4d_10d_action3_3,e4.u_4d_10d_action4_3,
+f1.u_1d_10d_action1_1,f1.u_1d_10d_action2_1,f1.u_1d_10d_action3_1,f1.u_1d_10d_action4_1,f1.u_1d_10d_action1_2,f1.u_1d_10d_action2_2,f1.u_1d_10d_action3_2,f1.u_1d_10d_action4_2,f1.u_1d_10d_action1_3,f1.u_1d_10d_action2_3,f1.u_1d_10d_action3_3,f1.u_1d_10d_action4_3
+from cloud_user_item_12_09_label a
+left outer join cloud_user_item_12_09_u_feature_1d_5d d1
+on a.user_id=d1.user_id
+left outer join cloud_user_item_12_09_u_feature_2d_6d d2
+on a.user_id=d2.user_id
+left outer join cloud_user_item_12_09_u_feature_3d_7d d3
+on a.user_id=d3.user_id
+left outer join cloud_user_item_12_09_u_feature_4d_8d d4
+on a.user_id=d4.user_id
+left outer join cloud_user_item_12_09_u_feature_5d_9d d5
+on a.user_id=d5.user_id 
+left outer join cloud_user_item_12_09_u_feature_6d_10d d6
+on a.user_id=d6.user_id 
+left outer join cloud_user_item_12_09_u_feature_1d_7d e1
+on a.user_id=e1.user_id 
+left outer join cloud_user_item_12_09_u_feature_2d_8d e2
+on a.user_id=e2.user_id 
+left outer join cloud_user_item_12_09_u_feature_3d_9d e3
+on a.user_id=e3.user_id 
+left outer join cloud_user_item_12_09_u_feature_4d_10d e4
+on a.user_id=e4.user_id
+left outer join cloud_user_item_12_09_u_feature_1d_10d f1
+on a.user_id=f1.user_id ;
+
+--特征整合
+--3.1
+create table cloud_train_1209_1218_7
+as
+select a.*,
+b1.i_1d_action1_1,b1.i_1d_action1_2,b1.i_1d_action2_1,b1.i_1d_action2_2,b1.i_1d_action3_1,b1.i_1d_action3_2,b1.i_1d_action4_1,b1.i_1d_action4_2,
+b2.i_2d_action1_1,b2.i_2d_action1_2,b2.i_2d_action2_1,b2.i_2d_action2_2,b2.i_2d_action3_1,b2.i_2d_action3_2,b2.i_2d_action4_1,b2.i_2d_action4_2,
+b3.i_3d_action1_1,b3.i_3d_action1_2,b3.i_3d_action2_1,b3.i_3d_action2_2,b3.i_3d_action3_1,b3.i_3d_action3_2,b3.i_3d_action4_1,b3.i_3d_action4_2,
+b4.i_4d_action1_1,b4.i_4d_action1_2,b4.i_4d_action2_1,b4.i_4d_action2_2,b4.i_4d_action3_1,b4.i_4d_action3_2,b4.i_4d_action4_1,b4.i_4d_action4_2,
+b5.i_5d_action1_1,b5.i_5d_action1_2,b5.i_5d_action2_1,b5.i_5d_action2_2,b5.i_5d_action3_1,b5.i_5d_action3_2,b5.i_5d_action4_1,b5.i_5d_action4_2,
+b6.i_6d_action1_1,b6.i_6d_action1_2,b6.i_6d_action2_1,b6.i_6d_action2_2,b6.i_6d_action3_1,b6.i_6d_action3_2,b6.i_6d_action4_1,b6.i_6d_action4_2,
+b7.i_7d_action1_1,b7.i_7d_action1_2,b7.i_7d_action2_1,b7.i_7d_action2_2,b7.i_7d_action3_1,b7.i_7d_action3_2,b7.i_7d_action4_1,b7.i_7d_action4_2,
+b8.i_8d_action1_1,b8.i_8d_action1_2,b8.i_8d_action2_1,b8.i_8d_action2_2,b8.i_8d_action3_1,b8.i_8d_action3_2,b8.i_8d_action4_1,b8.i_8d_action4_2,
+b9.i_9d_action1_1,b9.i_9d_action1_2,b9.i_9d_action2_1,b9.i_9d_action2_2,b9.i_9d_action3_1,b9.i_9d_action3_2,b9.i_9d_action4_1,b9.i_9d_action4_2,
+b10.i_10d_action1_1,b10.i_10d_action1_2,b10.i_10d_action2_1,b10.i_10d_action2_2,b10.i_10d_action3_1,b10.i_10d_action3_2,b10.i_10d_action4_1,b10.i_10d_action4_2
+from cloud_user_item_12_09_label a
+left outer join cloud_user_item_12_09_i_feature_1d b1
+on a.item_id=b1.item_id 
+left outer join cloud_user_item_12_09_i_feature_2d b2
+on a.item_id=b2.item_id
+left outer join cloud_user_item_12_09_i_feature_3d b3
+on a.item_id=b3.item_id
+left outer join cloud_user_item_12_09_i_feature_4d b4
+on a.item_id=b4.item_id 
+left outer join cloud_user_item_12_09_i_feature_5d b5
+on a.item_id=b5.item_id 
+left outer join cloud_user_item_12_09_i_feature_6d b6
+on a.item_id=b6.item_id
+left outer join cloud_user_item_12_09_i_feature_7d b7
+on a.item_id=b7.item_id 
+left outer join cloud_user_item_12_09_i_feature_8d b8
+on a.item_id=b8.item_id 
+left outer join cloud_user_item_12_09_i_feature_9d b9
+on a.item_id=b9.item_id 
+left outer join cloud_user_item_12_09_i_feature_10d b10
+on a.item_id=b10.item_id;
+
+--3.2
+create table cloud_train_1209_1218_8
+as
+select a.*,
+c1.i_1d_3d_action1_1,c1.i_1d_3d_action1_2,c1.i_1d_3d_action2_1,c1.i_1d_3d_action2_2,c1.i_1d_3d_action3_1,c1.i_1d_3d_action3_2,c1.i_1d_3d_action4_1,c1.i_1d_3d_action4_2,
+c2.i_2d_4d_action1_1,c2.i_2d_4d_action1_2,c2.i_2d_4d_action2_1,c2.i_2d_4d_action2_2,c2.i_2d_4d_action3_1,c2.i_2d_4d_action3_2,c2.i_2d_4d_action4_1,c2.i_2d_4d_action4_2,
+c3.i_3d_5d_action1_1,c3.i_3d_5d_action1_2,c3.i_3d_5d_action2_1,c3.i_3d_5d_action2_2,c3.i_3d_5d_action3_1,c3.i_3d_5d_action3_2,c3.i_3d_5d_action4_1,c3.i_3d_5d_action4_2,
+c4.i_4d_6d_action1_1,c4.i_4d_6d_action1_2,c4.i_4d_6d_action2_1,c4.i_4d_6d_action2_2,c4.i_4d_6d_action3_1,c4.i_4d_6d_action3_2,c4.i_4d_6d_action4_1,c4.i_4d_6d_action4_2,
+c5.i_5d_7d_action1_1,c5.i_5d_7d_action1_2,c5.i_5d_7d_action2_1,c5.i_5d_7d_action2_2,c5.i_5d_7d_action3_1,c5.i_5d_7d_action3_2,c5.i_5d_7d_action4_1,c5.i_5d_7d_action4_2,
+c6.i_6d_8d_action1_1,c6.i_6d_8d_action1_2,c6.i_6d_8d_action2_1,c6.i_6d_8d_action2_2,c6.i_6d_8d_action3_1,c6.i_6d_8d_action3_2,c6.i_6d_8d_action4_1,c6.i_6d_8d_action4_2,
+c7.i_7d_9d_action1_1,c7.i_7d_9d_action1_2,c7.i_7d_9d_action2_1,c7.i_7d_9d_action2_2,c7.i_7d_9d_action3_1,c7.i_7d_9d_action3_2,c7.i_7d_9d_action4_1,c7.i_7d_9d_action4_2,
+c8.i_8d_10d_action1_1,c8.i_8d_10d_action1_2,c8.i_8d_10d_action2_1,c8.i_8d_10d_action2_2,c8.i_8d_10d_action3_1,c8.i_8d_10d_action3_2,c8.i_8d_10d_action4_1,c8.i_8d_10d_action4_2
+from cloud_user_item_12_09_label a
+left outer join cloud_user_item_12_09_i_feature_1d_3d c1
+on a.item_id=c1.item_id 
+left outer join cloud_user_item_12_09_i_feature_2d_4d c2
+on a.item_id=c2.item_id 
+left outer join cloud_user_item_12_09_i_feature_3d_5d c3
+on a.item_id=c3.item_id 
+left outer join cloud_user_item_12_09_i_feature_4d_6d c4
+on a.item_id=c4.item_id 
+left outer join cloud_user_item_12_09_i_feature_5d_7d c5
+on a.item_id=c5.item_id 
+left outer join cloud_user_item_12_09_i_feature_6d_8d c6
+on a.item_id=c6.item_id 
+left outer join cloud_user_item_12_09_i_feature_7d_9d c7
+on a.item_id=c7.item_id 
+left outer join cloud_user_item_12_09_i_feature_8d_10d c8
+on a.item_id=c8.item_id;
+
+--3.3
+create table cloud_train_1209_1218_9
+as
+select a.*,
+d1.i_1d_5d_action1_1,d1.i_1d_5d_action2_1,d1.i_1d_5d_action3_1,d1.i_1d_5d_action4_1,d1.i_1d_5d_action1_2,d1.i_1d_5d_action2_2,d1.i_1d_5d_action3_2,d1.i_1d_5d_action4_2,
+d2.i_2d_6d_action1_1,d2.i_2d_6d_action2_1,d2.i_2d_6d_action3_1,d2.i_2d_6d_action4_1,d2.i_2d_6d_action1_2,d2.i_2d_6d_action2_2,d2.i_2d_6d_action3_2,d2.i_2d_6d_action4_2,
+d3.i_3d_7d_action1_1,d3.i_3d_7d_action2_1,d3.i_3d_7d_action3_1,d3.i_3d_7d_action4_1,d3.i_3d_7d_action1_2,d3.i_3d_7d_action2_2,d3.i_3d_7d_action3_2,d3.i_3d_7d_action4_2,
+d4.i_4d_8d_action1_1,d4.i_4d_8d_action2_1,d4.i_4d_8d_action3_1,d4.i_4d_8d_action4_1,d4.i_4d_8d_action1_2,d4.i_4d_8d_action2_2,d4.i_4d_8d_action3_2,d4.i_4d_8d_action4_2,
+d5.i_5d_9d_action1_1,d5.i_5d_9d_action2_1,d5.i_5d_9d_action3_1,d5.i_5d_9d_action4_1,d5.i_5d_9d_action1_2,d5.i_5d_9d_action2_2,d5.i_5d_9d_action3_2,d5.i_5d_9d_action4_2,
+d6.i_6d_10d_action1_1,d6.i_6d_10d_action2_1,d6.i_6d_10d_action3_1,d6.i_6d_10d_action4_1,d6.i_6d_10d_action1_2,d6.i_6d_10d_action2_2,d6.i_6d_10d_action3_2,d6.i_6d_10d_action4_2,
+e1.i_1d_7d_action1_1,e1.i_1d_7d_action2_1,e1.i_1d_7d_action3_1,e1.i_1d_7d_action4_1,e1.i_1d_7d_action1_2,e1.i_1d_7d_action2_2,e1.i_1d_7d_action3_2,e1.i_1d_7d_action4_2,
+e2.i_2d_8d_action1_1,e2.i_2d_8d_action2_1,e2.i_2d_8d_action3_1,e2.i_2d_8d_action4_1,e2.i_2d_8d_action1_2,e2.i_2d_8d_action2_2,e2.i_2d_8d_action3_2,e2.i_2d_8d_action4_2,
+e3.i_3d_9d_action1_1,e3.i_3d_9d_action2_1,e3.i_3d_9d_action3_1,e3.i_3d_9d_action4_1,e3.i_3d_9d_action1_2,e3.i_3d_9d_action2_2,e3.i_3d_9d_action3_2,e3.i_3d_9d_action4_2,
+e4.i_4d_10d_action1_1,e4.i_4d_10d_action2_1,e4.i_4d_10d_action3_1,e4.i_4d_10d_action4_1,e4.i_4d_10d_action1_2,e4.i_4d_10d_action2_2,e4.i_4d_10d_action3_2,e4.i_4d_10d_action4_2,
+f1.i_1d_10d_action1_1,f1.i_1d_10d_action2_1,f1.i_1d_10d_action3_1,f1.i_1d_10d_action4_1,f1.i_1d_10d_action1_2,f1.i_1d_10d_action2_2,f1.i_1d_10d_action3_2,f1.i_1d_10d_action4_2
+from cloud_user_item_12_09_label a
+left outer join cloud_user_item_12_09_i_feature_1d_5d d1
+on a.item_id=d1.item_id
+left outer join cloud_user_item_12_09_i_feature_2d_6d d2
+on a.item_id=d2.item_id
+left outer join cloud_user_item_12_09_i_feature_3d_7d d3
+on a.item_id=d3.item_id
+left outer join cloud_user_item_12_09_i_feature_4d_8d d4
+on a.item_id=d4.item_id
+left outer join cloud_user_item_12_09_i_feature_5d_9d d5
+on a.item_id=d5.item_id 
+left outer join cloud_user_item_12_09_i_feature_6d_10d d6
+on a.item_id=d6.item_id 
+left outer join cloud_user_item_12_09_i_feature_1d_7d e1
+on a.item_id=e1.item_id 
+left outer join cloud_user_item_12_09_i_feature_2d_8d e2
+on a.item_id=e2.item_id 
+left outer join cloud_user_item_12_09_i_feature_3d_9d e3
+on a.item_id=e3.item_id 
+left outer join cloud_user_item_12_09_i_feature_4d_10d e4
+on a.item_id=e4.item_id
+left outer join cloud_user_item_12_09_i_feature_1d_10d f1
+on a.item_id=f1.item_id ;
+
+--特征最终整合
+create table cloud_train_1209_1218
+as
+select a.*,
+a1.ui_1d_action1,a1.ui_1d_action2,a1.ui_1d_action3,a1.ui_1d_action4,
+a1.ui_2d_action1,a1.ui_2d_action2,a1.ui_2d_action3,a1.ui_2d_action4,
+a1.ui_3d_action1,a1.ui_3d_action2,a1.ui_3d_action3,a1.ui_3d_action4,
+a1.ui_4d_action1,a1.ui_4d_action2,a1.ui_4d_action3,a1.ui_4d_action4,
+a1.ui_5d_action1,a1.ui_5d_action2,a1.ui_5d_action3,a1.ui_5d_action4,
+a1.ui_6d_action1,a1.ui_6d_action2,a1.ui_6d_action3,a1.ui_6d_action4,
+a1.ui_7d_action1,a1.ui_7d_action2,a1.ui_7d_action3,a1.ui_7d_action4,
+a1.ui_8d_action1,a1.ui_8d_action2,a1.ui_8d_action3,a1.ui_8d_action4,
+a1.ui_9d_action1,a1.ui_9d_action2,a1.ui_9d_action3,a1.ui_9d_action4,
+a1.ui_10d_action1,a1.ui_10d_action2,a1.ui_10d_action3,a1.ui_10d_action4,
+
+a2.ui_1d_3d_action1,a2.ui_1d_3d_action2,a2.ui_1d_3d_action3,a2.ui_1d_3d_action4,
+a2.ui_2d_4d_action1,a2.ui_2d_4d_action2,a2.ui_2d_4d_action3,a2.ui_2d_4d_action4,
+a2.ui_3d_5d_action1,a2.ui_3d_5d_action2,a2.ui_3d_5d_action3,a2.ui_3d_5d_action4,
+a2.ui_4d_6d_action1,a2.ui_4d_6d_action2,a2.ui_4d_6d_action3,a2.ui_4d_6d_action4,
+a2.ui_5d_7d_action1,a2.ui_5d_7d_action2,a2.ui_5d_7d_action3,a2.ui_5d_7d_action4,
+a2.ui_6d_8d_action1,a2.ui_6d_8d_action2,a2.ui_6d_8d_action3,a2.ui_6d_8d_action4,
+a2.ui_7d_9d_action1,a2.ui_7d_9d_action2,a2.ui_7d_9d_action3,a2.ui_7d_9d_action4,
+a2.ui_8d_10d_action1,a2.ui_8d_10d_action2,a2.ui_8d_10d_action3,a2.ui_8d_10d_action4,
+
+a3.ui_1d_5d_action1,a3.ui_1d_5d_action2,a3.ui_1d_5d_action3,a3.ui_1d_5d_action4,
+a3.ui_2d_6d_action1,a3.ui_2d_6d_action2,a3.ui_2d_6d_action3,a3.ui_2d_6d_action4,
+a3.ui_3d_7d_action1,a3.ui_3d_7d_action2,a3.ui_3d_7d_action3,a3.ui_3d_7d_action4,
+a3.ui_4d_8d_action1,a3.ui_4d_8d_action2,a3.ui_4d_8d_action3,a3.ui_4d_8d_action4,
+a3.ui_5d_9d_action1,a3.ui_5d_9d_action2,a3.ui_5d_9d_action3,a3.ui_5d_9d_action4,
+a3.ui_6d_10d_action1,a3.ui_6d_10d_action2,a3.ui_6d_10d_action3,a3.ui_6d_10d_action4,
+a3.ui_1d_7d_action1,a3.ui_1d_7d_action2,a3.ui_1d_7d_action3,a3.ui_1d_7d_action4,
+a3.ui_2d_8d_action1,a3.ui_2d_8d_action2,a3.ui_2d_8d_action3,a3.ui_2d_8d_action4,
+a3.ui_3d_9d_action1,a3.ui_3d_9d_action2,a3.ui_3d_9d_action3,a3.ui_3d_9d_action4,
+a3.ui_4d_10d_action1,a3.ui_4d_10d_action2,a3.ui_4d_10d_action3,a3.ui_4d_10d_action4,
+a3.ui_1d_10d_action1,a3.ui_1d_10d_action2,a3.ui_1d_10d_action3,a3.ui_1d_10d_action4,
+
+a4.u_1d_action1_1,a4.u_1d_action1_2,a4.u_1d_action1_3,a4.u_1d_action2_1,a4.u_1d_action2_2,a4.u_1d_action2_3,a4.u_1d_action3_1,a4.u_1d_action3_2,a4.u_1d_action3_3,a4.u_1d_action4_1,a4.u_1d_action4_2,a4.u_1d_action4_3,
+a4.u_2d_action1_1,a4.u_2d_action1_2,a4.u_2d_action1_3,a4.u_2d_action2_1,a4.u_2d_action2_2,a4.u_2d_action2_3,a4.u_2d_action3_1,a4.u_2d_action3_2,a4.u_2d_action3_3,a4.u_2d_action4_1,a4.u_2d_action4_2,a4.u_2d_action4_3,
+a4.u_3d_action1_1,a4.u_3d_action1_2,a4.u_3d_action1_3,a4.u_3d_action2_1,a4.u_3d_action2_2,a4.u_3d_action2_3,a4.u_3d_action3_1,a4.u_3d_action3_2,a4.u_3d_action3_3,a4.u_3d_action4_1,a4.u_3d_action4_2,a4.u_3d_action4_3,
+a4.u_4d_action1_1,a4.u_4d_action1_2,a4.u_4d_action1_3,a4.u_4d_action2_1,a4.u_4d_action2_2,a4.u_4d_action2_3,a4.u_4d_action3_1,a4.u_4d_action3_2,a4.u_4d_action3_3,a4.u_4d_action4_1,a4.u_4d_action4_2,a4.u_4d_action4_3,
+a4.u_5d_action1_1,a4.u_5d_action1_2,a4.u_5d_action1_3,a4.u_5d_action2_1,a4.u_5d_action2_2,a4.u_5d_action2_3,a4.u_5d_action3_1,a4.u_5d_action3_2,a4.u_5d_action3_3,a4.u_5d_action4_1,a4.u_5d_action4_2,a4.u_5d_action4_3,
+a4.u_6d_action1_1,a4.u_6d_action1_2,a4.u_6d_action1_3,a4.u_6d_action2_1,a4.u_6d_action2_2,a4.u_6d_action2_3,a4.u_6d_action3_1,a4.u_6d_action3_2,a4.u_6d_action3_3,a4.u_6d_action4_1,a4.u_6d_action4_2,a4.u_6d_action4_3,
+a4.u_7d_action1_1,a4.u_7d_action1_2,a4.u_7d_action1_3,a4.u_7d_action2_1,a4.u_7d_action2_2,a4.u_7d_action2_3,a4.u_7d_action3_1,a4.u_7d_action3_2,a4.u_7d_action3_3,a4.u_7d_action4_1,a4.u_7d_action4_2,a4.u_7d_action4_3,
+a4.u_8d_action1_1,a4.u_8d_action1_2,a4.u_8d_action1_3,a4.u_8d_action2_1,a4.u_8d_action2_2,a4.u_8d_action2_3,a4.u_8d_action3_1,a4.u_8d_action3_2,a4.u_8d_action3_3,a4.u_8d_action4_1,a4.u_8d_action4_2,a4.u_8d_action4_3,
+a4.u_9d_action1_1,a4.u_9d_action1_2,a4.u_9d_action1_3,a4.u_9d_action2_1,a4.u_9d_action2_2,a4.u_9d_action2_3,a4.u_9d_action3_1,a4.u_9d_action3_2,a4.u_9d_action3_3,a4.u_9d_action4_1,a4.u_9d_action4_2,a4.u_9d_action4_3,
+a4.u_10d_action1_1,a4.u_10d_action1_2,a4.u_10d_action1_3,a4.u_10d_action2_1,a4.u_10d_action2_2,a4.u_10d_action2_3,a4.u_10d_action3_1,a4.u_10d_action3_2,a4.u_10d_action3_3,a4.u_10d_action4_1,a4.u_10d_action4_2,a4.u_10d_action4_3,
+
+a5.u_1d_3d_action1_1,a5.u_1d_3d_action1_2,a5.u_1d_3d_action1_3,a5.u_1d_3d_action2_1,a5.u_1d_3d_action2_2,a5.u_1d_3d_action2_3,a5.u_1d_3d_action3_1,a5.u_1d_3d_action3_2,a5.u_1d_3d_action3_3,a5.u_1d_3d_action4_1,a5.u_1d_3d_action4_2,a5.u_1d_3d_action4_3,
+a5.u_2d_4d_action1_1,a5.u_2d_4d_action1_2,a5.u_2d_4d_action1_3,a5.u_2d_4d_action2_1,a5.u_2d_4d_action2_2,a5.u_2d_4d_action2_3,a5.u_2d_4d_action3_1,a5.u_2d_4d_action3_2,a5.u_2d_4d_action3_3,a5.u_2d_4d_action4_1,a5.u_2d_4d_action4_2,a5.u_2d_4d_action4_3,
+a5.u_3d_5d_action1_1,a5.u_3d_5d_action1_2,a5.u_3d_5d_action1_3,a5.u_3d_5d_action2_1,a5.u_3d_5d_action2_2,a5.u_3d_5d_action2_3,a5.u_3d_5d_action3_1,a5.u_3d_5d_action3_2,a5.u_3d_5d_action3_3,a5.u_3d_5d_action4_1,a5.u_3d_5d_action4_2,a5.u_3d_5d_action4_3,
+a5.u_4d_6d_action1_1,a5.u_4d_6d_action1_2,a5.u_4d_6d_action1_3,a5.u_4d_6d_action2_1,a5.u_4d_6d_action2_2,a5.u_4d_6d_action2_3,a5.u_4d_6d_action3_1,a5.u_4d_6d_action3_2,a5.u_4d_6d_action3_3,a5.u_4d_6d_action4_1,a5.u_4d_6d_action4_2,a5.u_4d_6d_action4_3,
+a5.u_5d_7d_action1_1,a5.u_5d_7d_action1_2,a5.u_5d_7d_action1_3,a5.u_5d_7d_action2_1,a5.u_5d_7d_action2_2,a5.u_5d_7d_action2_3,a5.u_5d_7d_action3_1,a5.u_5d_7d_action3_2,a5.u_5d_7d_action3_3,a5.u_5d_7d_action4_1,a5.u_5d_7d_action4_2,a5.u_5d_7d_action4_3,
+a5.u_6d_8d_action1_1,a5.u_6d_8d_action1_2,a5.u_6d_8d_action1_3,a5.u_6d_8d_action2_1,a5.u_6d_8d_action2_2,a5.u_6d_8d_action2_3,a5.u_6d_8d_action3_1,a5.u_6d_8d_action3_2,a5.u_6d_8d_action3_3,a5.u_6d_8d_action4_1,a5.u_6d_8d_action4_2,a5.u_6d_8d_action4_3,
+a5.u_7d_9d_action1_1,a5.u_7d_9d_action1_2,a5.u_7d_9d_action1_3,a5.u_7d_9d_action2_1,a5.u_7d_9d_action2_2,a5.u_7d_9d_action2_3,a5.u_7d_9d_action3_1,a5.u_7d_9d_action3_2,a5.u_7d_9d_action3_3,a5.u_7d_9d_action4_1,a5.u_7d_9d_action4_2,a5.u_7d_9d_action4_3,
+a5.u_8d_10d_action1_1,a5.u_8d_10d_action1_2,a5.u_8d_10d_action1_3,a5.u_8d_10d_action2_1,a5.u_8d_10d_action2_2,a5.u_8d_10d_action2_3,a5.u_8d_10d_action3_1,a5.u_8d_10d_action3_2,a5.u_8d_10d_action3_3,a5.u_8d_10d_action4_1,a5.u_8d_10d_action4_2,a5.u_8d_10d_action4_3,
+
+a6.u_1d_5d_action1_1,a6.u_1d_5d_action2_1,a6.u_1d_5d_action3_1,a6.u_1d_5d_action4_1,a6.u_1d_5d_action1_2,a6.u_1d_5d_action2_2,a6.u_1d_5d_action3_2,a6.u_1d_5d_action4_2,a6.u_1d_5d_action1_3,a6.u_1d_5d_action2_3,a6.u_1d_5d_action3_3,a6.u_1d_5d_action4_3,
+a6.u_2d_6d_action1_1,a6.u_2d_6d_action2_1,a6.u_2d_6d_action3_1,a6.u_2d_6d_action4_1,a6.u_2d_6d_action1_2,a6.u_2d_6d_action2_2,a6.u_2d_6d_action3_2,a6.u_2d_6d_action4_2,a6.u_2d_6d_action1_3,a6.u_2d_6d_action2_3,a6.u_2d_6d_action3_3,a6.u_2d_6d_action4_3,
+a6.u_3d_7d_action1_1,a6.u_3d_7d_action2_1,a6.u_3d_7d_action3_1,a6.u_3d_7d_action4_1,a6.u_3d_7d_action1_2,a6.u_3d_7d_action2_2,a6.u_3d_7d_action3_2,a6.u_3d_7d_action4_2,a6.u_3d_7d_action1_3,a6.u_3d_7d_action2_3,a6.u_3d_7d_action3_3,a6.u_3d_7d_action4_3,
+a6.u_4d_8d_action1_1,a6.u_4d_8d_action2_1,a6.u_4d_8d_action3_1,a6.u_4d_8d_action4_1,a6.u_4d_8d_action1_2,a6.u_4d_8d_action2_2,a6.u_4d_8d_action3_2,a6.u_4d_8d_action4_2,a6.u_4d_8d_action1_3,a6.u_4d_8d_action2_3,a6.u_4d_8d_action3_3,a6.u_4d_8d_action4_3,
+a6.u_5d_9d_action1_1,a6.u_5d_9d_action2_1,a6.u_5d_9d_action3_1,a6.u_5d_9d_action4_1,a6.u_5d_9d_action1_2,a6.u_5d_9d_action2_2,a6.u_5d_9d_action3_2,a6.u_5d_9d_action4_2,a6.u_5d_9d_action1_3,a6.u_5d_9d_action2_3,a6.u_5d_9d_action3_3,a6.u_5d_9d_action4_3,
+a6.u_6d_10d_action1_1,a6.u_6d_10d_action2_1,a6.u_6d_10d_action3_1,a6.u_6d_10d_action4_1,a6.u_6d_10d_action1_2,a6.u_6d_10d_action2_2,a6.u_6d_10d_action3_2,a6.u_6d_10d_action4_2,a6.u_6d_10d_action1_3,a6.u_6d_10d_action2_3,a6.u_6d_10d_action3_3,a6.u_6d_10d_action4_3,
+a6.u_1d_7d_action1_1,a6.u_1d_7d_action2_1,a6.u_1d_7d_action3_1,a6.u_1d_7d_action4_1,a6.u_1d_7d_action1_2,a6.u_1d_7d_action2_2,a6.u_1d_7d_action3_2,a6.u_1d_7d_action4_2,a6.u_1d_7d_action1_3,a6.u_1d_7d_action2_3,a6.u_1d_7d_action3_3,a6.u_1d_7d_action4_3,
+a6.u_2d_8d_action1_1,a6.u_2d_8d_action2_1,a6.u_2d_8d_action3_1,a6.u_2d_8d_action4_1,a6.u_2d_8d_action1_2,a6.u_2d_8d_action2_2,a6.u_2d_8d_action3_2,a6.u_2d_8d_action4_2,a6.u_2d_8d_action1_3,a6.u_2d_8d_action2_3,a6.u_2d_8d_action3_3,a6.u_2d_8d_action4_3,
+a6.u_3d_9d_action1_1,a6.u_3d_9d_action2_1,a6.u_3d_9d_action3_1,a6.u_3d_9d_action4_1,a6.u_3d_9d_action1_2,a6.u_3d_9d_action2_2,a6.u_3d_9d_action3_2,a6.u_3d_9d_action4_2,a6.u_3d_9d_action1_3,a6.u_3d_9d_action2_3,a6.u_3d_9d_action3_3,a6.u_3d_9d_action4_3,
+a6.u_4d_10d_action1_1,a6.u_4d_10d_action2_1,a6.u_4d_10d_action3_1,a6.u_4d_10d_action4_1,a6.u_4d_10d_action1_2,a6.u_4d_10d_action2_2,a6.u_4d_10d_action3_2,a6.u_4d_10d_action4_2,a6.u_4d_10d_action1_3,a6.u_4d_10d_action2_3,a6.u_4d_10d_action3_3,a6.u_4d_10d_action4_3,
+a6.u_1d_10d_action1_1,a6.u_1d_10d_action2_1,a6.u_1d_10d_action3_1,a6.u_1d_10d_action4_1,a6.u_1d_10d_action1_2,a6.u_1d_10d_action2_2,a6.u_1d_10d_action3_2,a6.u_1d_10d_action4_2,a6.u_1d_10d_action1_3,a6.u_1d_10d_action2_3,a6.u_1d_10d_action3_3,a6.u_1d_10d_action4_3,
+
+a7.i_1d_action1_1,a7.i_1d_action1_2,a7.i_1d_action2_1,a7.i_1d_action2_2,a7.i_1d_action3_1,a7.i_1d_action3_2,a7.i_1d_action4_1,a7.i_1d_action4_2,
+a7.i_2d_action1_1,a7.i_2d_action1_2,a7.i_2d_action2_1,a7.i_2d_action2_2,a7.i_2d_action3_1,a7.i_2d_action3_2,a7.i_2d_action4_1,a7.i_2d_action4_2,
+a7.i_3d_action1_1,a7.i_3d_action1_2,a7.i_3d_action2_1,a7.i_3d_action2_2,a7.i_3d_action3_1,a7.i_3d_action3_2,a7.i_3d_action4_1,a7.i_3d_action4_2,
+a7.i_4d_action1_1,a7.i_4d_action1_2,a7.i_4d_action2_1,a7.i_4d_action2_2,a7.i_4d_action3_1,a7.i_4d_action3_2,a7.i_4d_action4_1,a7.i_4d_action4_2,
+a7.i_5d_action1_1,a7.i_5d_action1_2,a7.i_5d_action2_1,a7.i_5d_action2_2,a7.i_5d_action3_1,a7.i_5d_action3_2,a7.i_5d_action4_1,a7.i_5d_action4_2,
+a7.i_6d_action1_1,a7.i_6d_action1_2,a7.i_6d_action2_1,a7.i_6d_action2_2,a7.i_6d_action3_1,a7.i_6d_action3_2,a7.i_6d_action4_1,a7.i_6d_action4_2,
+a7.i_7d_action1_1,a7.i_7d_action1_2,a7.i_7d_action2_1,a7.i_7d_action2_2,a7.i_7d_action3_1,a7.i_7d_action3_2,a7.i_7d_action4_1,a7.i_7d_action4_2,
+a7.i_8d_action1_1,a7.i_8d_action1_2,a7.i_8d_action2_1,a7.i_8d_action2_2,a7.i_8d_action3_1,a7.i_8d_action3_2,a7.i_8d_action4_1,a7.i_8d_action4_2,
+a7.i_9d_action1_1,a7.i_9d_action1_2,a7.i_9d_action2_1,a7.i_9d_action2_2,a7.i_9d_action3_1,a7.i_9d_action3_2,a7.i_9d_action4_1,a7.i_9d_action4_2,
+a7.i_10d_action1_1,a7.i_10d_action1_2,a7.i_10d_action2_1,a7.i_10d_action2_2,a7.i_10d_action3_1,a7.i_10d_action3_2,a7.i_10d_action4_1,a7.i_10d_action4_2,
+
+a8.i_1d_3d_action1_1,a8.i_1d_3d_action1_2,a8.i_1d_3d_action2_1,a8.i_1d_3d_action2_2,a8.i_1d_3d_action3_1,a8.i_1d_3d_action3_2,a8.i_1d_3d_action4_1,a8.i_1d_3d_action4_2,
+a8.i_2d_4d_action1_1,a8.i_2d_4d_action1_2,a8.i_2d_4d_action2_1,a8.i_2d_4d_action2_2,a8.i_2d_4d_action3_1,a8.i_2d_4d_action3_2,a8.i_2d_4d_action4_1,a8.i_2d_4d_action4_2,
+a8.i_3d_5d_action1_1,a8.i_3d_5d_action1_2,a8.i_3d_5d_action2_1,a8.i_3d_5d_action2_2,a8.i_3d_5d_action3_1,a8.i_3d_5d_action3_2,a8.i_3d_5d_action4_1,a8.i_3d_5d_action4_2,
+a8.i_4d_6d_action1_1,a8.i_4d_6d_action1_2,a8.i_4d_6d_action2_1,a8.i_4d_6d_action2_2,a8.i_4d_6d_action3_1,a8.i_4d_6d_action3_2,a8.i_4d_6d_action4_1,a8.i_4d_6d_action4_2,
+a8.i_5d_7d_action1_1,a8.i_5d_7d_action1_2,a8.i_5d_7d_action2_1,a8.i_5d_7d_action2_2,a8.i_5d_7d_action3_1,a8.i_5d_7d_action3_2,a8.i_5d_7d_action4_1,a8.i_5d_7d_action4_2,
+a8.i_6d_8d_action1_1,a8.i_6d_8d_action1_2,a8.i_6d_8d_action2_1,a8.i_6d_8d_action2_2,a8.i_6d_8d_action3_1,a8.i_6d_8d_action3_2,a8.i_6d_8d_action4_1,a8.i_6d_8d_action4_2,
+a8.i_7d_9d_action1_1,a8.i_7d_9d_action1_2,a8.i_7d_9d_action2_1,a8.i_7d_9d_action2_2,a8.i_7d_9d_action3_1,a8.i_7d_9d_action3_2,a8.i_7d_9d_action4_1,a8.i_7d_9d_action4_2,
+a8.i_8d_10d_action1_1,a8.i_8d_10d_action1_2,a8.i_8d_10d_action2_1,a8.i_8d_10d_action2_2,a8.i_8d_10d_action3_1,a8.i_8d_10d_action3_2,a8.i_8d_10d_action4_1,a8.i_8d_10d_action4_2,
+
+a9.i_1d_5d_action1_1,a9.i_1d_5d_action2_1,a9.i_1d_5d_action3_1,a9.i_1d_5d_action4_1,a9.i_1d_5d_action1_2,a9.i_1d_5d_action2_2,a9.i_1d_5d_action3_2,a9.i_1d_5d_action4_2,
+a9.i_2d_6d_action1_1,a9.i_2d_6d_action2_1,a9.i_2d_6d_action3_1,a9.i_2d_6d_action4_1,a9.i_2d_6d_action1_2,a9.i_2d_6d_action2_2,a9.i_2d_6d_action3_2,a9.i_2d_6d_action4_2,
+a9.i_3d_7d_action1_1,a9.i_3d_7d_action2_1,a9.i_3d_7d_action3_1,a9.i_3d_7d_action4_1,a9.i_3d_7d_action1_2,a9.i_3d_7d_action2_2,a9.i_3d_7d_action3_2,a9.i_3d_7d_action4_2,
+a9.i_4d_8d_action1_1,a9.i_4d_8d_action2_1,a9.i_4d_8d_action3_1,a9.i_4d_8d_action4_1,a9.i_4d_8d_action1_2,a9.i_4d_8d_action2_2,a9.i_4d_8d_action3_2,a9.i_4d_8d_action4_2,
+a9.i_5d_9d_action1_1,a9.i_5d_9d_action2_1,a9.i_5d_9d_action3_1,a9.i_5d_9d_action4_1,a9.i_5d_9d_action1_2,a9.i_5d_9d_action2_2,a9.i_5d_9d_action3_2,a9.i_5d_9d_action4_2,
+a9.i_6d_10d_action1_1,a9.i_6d_10d_action2_1,a9.i_6d_10d_action3_1,a9.i_6d_10d_action4_1,a9.i_6d_10d_action1_2,a9.i_6d_10d_action2_2,a9.i_6d_10d_action3_2,a9.i_6d_10d_action4_2,
+a9.i_1d_7d_action1_1,a9.i_1d_7d_action2_1,a9.i_1d_7d_action3_1,a9.i_1d_7d_action4_1,a9.i_1d_7d_action1_2,a9.i_1d_7d_action2_2,a9.i_1d_7d_action3_2,a9.i_1d_7d_action4_2,
+a9.i_2d_8d_action1_1,a9.i_2d_8d_action2_1,a9.i_2d_8d_action3_1,a9.i_2d_8d_action4_1,a9.i_2d_8d_action1_2,a9.i_2d_8d_action2_2,a9.i_2d_8d_action3_2,a9.i_2d_8d_action4_2,
+a9.i_3d_9d_action1_1,a9.i_3d_9d_action2_1,a9.i_3d_9d_action3_1,a9.i_3d_9d_action4_1,a9.i_3d_9d_action1_2,a9.i_3d_9d_action2_2,a9.i_3d_9d_action3_2,a9.i_3d_9d_action4_2,
+a9.i_4d_10d_action1_1,a9.i_4d_10d_action2_1,a9.i_4d_10d_action3_1,a9.i_4d_10d_action4_1,a9.i_4d_10d_action1_2,a9.i_4d_10d_action2_2,a9.i_4d_10d_action3_2,a9.i_4d_10d_action4_2,
+a9.i_1d_10d_action1_1,a9.i_1d_10d_action2_1,a9.i_1d_10d_action3_1,a9.i_1d_10d_action4_1,a9.i_1d_10d_action1_2,a9.i_1d_10d_action2_2,a9.i_1d_10d_action3_2,a9.i_1d_10d_action4_2,
+
+a10.action1_rank,a10.action3_rank,a10.action4_rank,a10.sum_rank
+
+from 
+cloud_user_item_12_09_label a
+left outer join cloud_train_1209_1218_1 a1
+on a.user_id = a1.user_id and a.item_id = a1.item_id
+left outer join cloud_train_1209_1218_2 a2
+on a.user_id = a2.user_id and a.item_id = a2.item_id
+left outer join cloud_train_1209_1218_3 a3
+on a.user_id = a3.user_id and a.item_id = a3.item_id
+left outer join cloud_train_1209_1218_4 a4
+on a.user_id = a4.user_id and a.item_id = a4.item_id
+left outer join cloud_train_1209_1218_5 a5
+on a.user_id = a5.user_id and a.item_id = a5.item_id
+left outer join cloud_train_1209_1218_6 a6
+on a.user_id = a6.user_id and a.item_id = a6.item_id
+left outer join cloud_train_1209_1218_7 a7
+on a.user_id = a7.user_id and a.item_id = a7.item_id
+left outer join cloud_train_1209_1218_8 a8
+on a.user_id = a8.user_id and a.item_id = a8.item_id
+left outer join cloud_train_1209_1218_9 a9
+on a.user_id = a9.user_id and a.item_id = a9.item_id
+left outer join cloud_user_item_12_09_ui_rank1_feature a10
+on a.user_id = a10.user_id and a.item_id = a10.item_id;

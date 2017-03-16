@@ -1,0 +1,44 @@
+--3.排序特征
+--11.18-11.27
+--用户浏览同一种类的商品浏览次数排名
+--用户加购物车同一种类的商品浏览次数排名
+--用户购买同一种类的商品浏览次数排名
+--同一用户上述交互次数总数排名
+create table cloud_user_item_11_18_ui_feature_1d_10d_rank
+as
+select a.user_id,a.item_id,a.item_category,
+case when b.action1 is null then 0 else b.action1 end as action1,
+case when c.action2 is null then 0 else c.action2 end as action2,
+case when d.action3 is null then 0 else d.action3 end as action3,
+case when e.action4 is null then 0 else e.action4 end as action4
+from 
+(select distinct user_id,item_id,item_category from cloud_user_train_clean_11_18)a
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_11_18 
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_11_18 
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_11_18 
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_11_18 
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;
+
+create table cloud_user_item_11_18_ui_rank1_feature
+as
+select user_id,item_id,
+dense_rank() over(partition by item_category order by action1 desc) as action1_rank,
+dense_rank() over(partition by item_category order by action3 desc) as action3_rank,
+dense_rank() over(partition by item_category order by action4 desc) as action4_rank,
+dense_rank() over(partition by item_category order by (action1+action3+action4) desc) as sum_rank
+from cloud_user_item_11_18_ui_feature_1d_10d_rank;

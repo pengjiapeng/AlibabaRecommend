@@ -1,0 +1,86 @@
+--1.从云端读取数据创建初始表
+CREATE TABLE cloud_user_train
+AS
+SELECT *
+FROM odps_tc_257100_f673506e024.tianchi_fresh_comp_train_user_online;
+
+CREATE TABLE cloud_item_train
+AS
+SELECT *
+FROM odps_tc_257100_f673506e024.tianchi_fresh_comp_train_item_online;
+
+--2.建立只在预测的商品子集上有交互行为的用户表
+CREATE TABLE cloud_user_item_train
+AS
+SELECT t.*
+	, b.item_geohash
+FROM cloud_user_train t
+JOIN cloud_item_train b
+ON b.item_id = t.item_id
+	AND b.item_category = t.item_category;
+	
+--3.查看表数据
+SELECT *
+FROM cloud_user_train;
+
+--4.用户清洗
+--4.1统计每个用户各种行为的次数
+create table cloud_user_filter_1
+as
+select a.user_id,a.action_1,b.action_2,c.action_3,d.action_4 
+from
+(
+select user_id,count(behavior_type)as action_1 from cloud_user_train where behavior_type=1 group by user_id
+)a left outer join
+(                                                       
+select user_id,count(behavior_type)as action_2 from cloud_user_train where behavior_type=2 group by user_id
+)b on a.user_id=b.user_id
+left outer join
+(
+select user_id,count(behavior_type)as action_3 from cloud_user_train where behavior_type=3 group by user_id
+)c on a.user_id=c.user_id
+left outer join
+(
+select user_id,count(behavior_type)as action_4 from cloud_user_train where behavior_type=4 group by user_id
+)d on a.user_id=d.user_id;
+
+create table cloud_user_filter_2
+as
+select distinct user_id,
+case when action_1 is null then 0 else action_1 end as action_1,
+case when action_2 is null then 0 else action_2 end as action_2,
+case when action_3 is null then 0 else action_3 end as action_3,
+case when action_4 is null then 0 else action_4 end as action_4
+from cloud_user_filter_1;
+
+--4.2统计不满足下面条件的用户
+--无收藏，加购物车，购买行为的用户
+--浏览数过多但是从没购买的用户
+--浏览数/购买数比例过大的用户
+create table cloud_user_exist
+as
+select distinct user_id from cloud_user_filter_2
+where not((action_2=0 and action_3=0 and action_4=0)
+or(action_1>3000 and action_4=0)
+or(action_4<>0 and action_1/action_4 > 3000));
+
+--4.3统计对商品子集有交互的用户
+create table cloud_user_mutual
+as
+select distinct user_id from cloud_user_item_train;
+
+--4.5统计满足4.2,4.3条件的用户
+create table cloud_user_exist_mutal
+as
+select distinct a.user_id 
+from cloud_user_exist a
+join cloud_user_mutual b
+on a.user_id = b.user_id;
+
+--4.6进行用户清洗
+create table cloud_user_train_clean
+as
+select a.*
+from cloud_user_train a
+join cloud_user_exist_mutal b
+on a.user_id = b.user_id;

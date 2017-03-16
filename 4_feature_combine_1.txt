@@ -1,0 +1,105 @@
+--特征整合
+--2.1
+create table cloud_train_1118_1127_4
+as
+select a.*,
+b1.u_1d_action1_1,b1.u_1d_action1_2,b1.u_1d_action1_3,b1.u_1d_action2_1,b1.u_1d_action2_2,b1.u_1d_action2_3,b1.u_1d_action3_1,b1.u_1d_action3_2,b1.u_1d_action3_3,b1.u_1d_action4_1,b1.u_1d_action4_2,b1.u_1d_action4_3,
+b2.u_2d_action1_1,b2.u_2d_action1_2,b2.u_2d_action1_3,b2.u_2d_action2_1,b2.u_2d_action2_2,b2.u_2d_action2_3,b2.u_2d_action3_1,b2.u_2d_action3_2,b2.u_2d_action3_3,b2.u_2d_action4_1,b2.u_2d_action4_2,b2.u_2d_action4_3,
+b3.u_3d_action1_1,b3.u_3d_action1_2,b3.u_3d_action1_3,b3.u_3d_action2_1,b3.u_3d_action2_2,b3.u_3d_action2_3,b3.u_3d_action3_1,b3.u_3d_action3_2,b3.u_3d_action3_3,b3.u_3d_action4_1,b3.u_3d_action4_2,b3.u_3d_action4_3,
+b4.u_4d_action1_1,b4.u_4d_action1_2,b4.u_4d_action1_3,b4.u_4d_action2_1,b4.u_4d_action2_2,b4.u_4d_action2_3,b4.u_4d_action3_1,b4.u_4d_action3_2,b4.u_4d_action3_3,b4.u_4d_action4_1,b4.u_4d_action4_2,b4.u_4d_action4_3,
+b5.u_5d_action1_1,b5.u_5d_action1_2,b5.u_5d_action1_3,b5.u_5d_action2_1,b5.u_5d_action2_2,b5.u_5d_action2_3,b5.u_5d_action3_1,b5.u_5d_action3_2,b5.u_5d_action3_3,b5.u_5d_action4_1,b5.u_5d_action4_2,b5.u_5d_action4_3,
+b6.u_6d_action1_1,b6.u_6d_action1_2,b6.u_6d_action1_3,b6.u_6d_action2_1,b6.u_6d_action2_2,b6.u_6d_action2_3,b6.u_6d_action3_1,b6.u_6d_action3_2,b6.u_6d_action3_3,b6.u_6d_action4_1,b6.u_6d_action4_2,b6.u_6d_action4_3,
+b7.u_7d_action1_1,b7.u_7d_action1_2,b7.u_7d_action1_3,b7.u_7d_action2_1,b7.u_7d_action2_2,b7.u_7d_action2_3,b7.u_7d_action3_1,b7.u_7d_action3_2,b7.u_7d_action3_3,b7.u_7d_action4_1,b7.u_7d_action4_2,b7.u_7d_action4_3,
+b8.u_8d_action1_1,b8.u_8d_action1_2,b8.u_8d_action1_3,b8.u_8d_action2_1,b8.u_8d_action2_2,b8.u_8d_action2_3,b8.u_8d_action3_1,b8.u_8d_action3_2,b8.u_8d_action3_3,b8.u_8d_action4_1,b8.u_8d_action4_2,b8.u_8d_action4_3,
+b9.u_9d_action1_1,b9.u_9d_action1_2,b9.u_9d_action1_3,b9.u_9d_action2_1,b9.u_9d_action2_2,b9.u_9d_action2_3,b9.u_9d_action3_1,b9.u_9d_action3_2,b9.u_9d_action3_3,b9.u_9d_action4_1,b9.u_9d_action4_2,b9.u_9d_action4_3,
+b10.u_10d_action1_1,b10.u_10d_action1_2,b10.u_10d_action1_3,b10.u_10d_action2_1,b10.u_10d_action2_2,b10.u_10d_action2_3,b10.u_10d_action3_1,b10.u_10d_action3_2,b10.u_10d_action3_3,b10.u_10d_action4_1,b10.u_10d_action4_2,b10.u_10d_action4_3
+from cloud_user_item_11_18_label a
+left outer join cloud_user_item_11_18_u_feature_1d b1
+on a.user_id=b1.user_id 
+left outer join cloud_user_item_11_18_u_feature_2d b2
+on a.user_id=b2.user_id
+left outer join cloud_user_item_11_18_u_feature_3d b3
+on a.user_id=b3.user_id
+left outer join cloud_user_item_11_18_u_feature_4d b4
+on a.user_id=b4.user_id 
+left outer join cloud_user_item_11_18_u_feature_5d b5
+on a.user_id=b5.user_id 
+left outer join cloud_user_item_11_18_u_feature_6d b6
+on a.user_id=b6.user_id
+left outer join cloud_user_item_11_18_u_feature_7d b7
+on a.user_id=b7.user_id 
+left outer join cloud_user_item_11_18_u_feature_8d b8
+on a.user_id=b8.user_id 
+left outer join cloud_user_item_11_18_u_feature_9d b9
+on a.user_id=b9.user_id 
+left outer join cloud_user_item_11_18_u_feature_10d b10
+on a.user_id=b10.user_id;
+
+--2.2
+create table cloud_train_1118_1127_5
+as
+select a.*,
+c1.u_1d_3d_action1_1,c1.u_1d_3d_action1_2,c1.u_1d_3d_action1_3,c1.u_1d_3d_action2_1,c1.u_1d_3d_action2_2,c1.u_1d_3d_action2_3,c1.u_1d_3d_action3_1,c1.u_1d_3d_action3_2,c1.u_1d_3d_action3_3,c1.u_1d_3d_action4_1,c1.u_1d_3d_action4_2,c1.u_1d_3d_action4_3,
+c2.u_2d_4d_action1_1,c2.u_2d_4d_action1_2,c2.u_2d_4d_action1_3,c2.u_2d_4d_action2_1,c2.u_2d_4d_action2_2,c2.u_2d_4d_action2_3,c2.u_2d_4d_action3_1,c2.u_2d_4d_action3_2,c2.u_2d_4d_action3_3,c2.u_2d_4d_action4_1,c2.u_2d_4d_action4_2,c2.u_2d_4d_action4_3,
+c3.u_3d_5d_action1_1,c3.u_3d_5d_action1_2,c3.u_3d_5d_action1_3,c3.u_3d_5d_action2_1,c3.u_3d_5d_action2_2,c3.u_3d_5d_action2_3,c3.u_3d_5d_action3_1,c3.u_3d_5d_action3_2,c3.u_3d_5d_action3_3,c3.u_3d_5d_action4_1,c3.u_3d_5d_action4_2,c3.u_3d_5d_action4_3,
+c4.u_4d_6d_action1_1,c4.u_4d_6d_action1_2,c4.u_4d_6d_action1_3,c4.u_4d_6d_action2_1,c4.u_4d_6d_action2_2,c4.u_4d_6d_action2_3,c4.u_4d_6d_action3_1,c4.u_4d_6d_action3_2,c4.u_4d_6d_action3_3,c4.u_4d_6d_action4_1,c4.u_4d_6d_action4_2,c4.u_4d_6d_action4_3,
+c5.u_5d_7d_action1_1,c5.u_5d_7d_action1_2,c5.u_5d_7d_action1_3,c5.u_5d_7d_action2_1,c5.u_5d_7d_action2_2,c5.u_5d_7d_action2_3,c5.u_5d_7d_action3_1,c5.u_5d_7d_action3_2,c5.u_5d_7d_action3_3,c5.u_5d_7d_action4_1,c5.u_5d_7d_action4_2,c5.u_5d_7d_action4_3,
+c6.u_6d_8d_action1_1,c6.u_6d_8d_action1_2,c6.u_6d_8d_action1_3,c6.u_6d_8d_action2_1,c6.u_6d_8d_action2_2,c6.u_6d_8d_action2_3,c6.u_6d_8d_action3_1,c6.u_6d_8d_action3_2,c6.u_6d_8d_action3_3,c6.u_6d_8d_action4_1,c6.u_6d_8d_action4_2,c6.u_6d_8d_action4_3,
+c7.u_7d_9d_action1_1,c7.u_7d_9d_action1_2,c7.u_7d_9d_action1_3,c7.u_7d_9d_action2_1,c7.u_7d_9d_action2_2,c7.u_7d_9d_action2_3,c7.u_7d_9d_action3_1,c7.u_7d_9d_action3_2,c7.u_7d_9d_action3_3,c7.u_7d_9d_action4_1,c7.u_7d_9d_action4_2,c7.u_7d_9d_action4_3,
+c8.u_8d_10d_action1_1,c8.u_8d_10d_action1_2,c8.u_8d_10d_action1_3,c8.u_8d_10d_action2_1,c8.u_8d_10d_action2_2,c8.u_8d_10d_action2_3,c8.u_8d_10d_action3_1,c8.u_8d_10d_action3_2,c8.u_8d_10d_action3_3,c8.u_8d_10d_action4_1,c8.u_8d_10d_action4_2,c8.u_8d_10d_action4_3
+from cloud_user_item_11_18_label a
+left outer join cloud_user_item_11_18_u_feature_1d_3d c1
+on a.user_id=c1.user_id 
+left outer join cloud_user_item_11_18_u_feature_2d_4d c2
+on a.user_id=c2.user_id 
+left outer join cloud_user_item_11_18_u_feature_3d_5d c3
+on a.user_id=c3.user_id 
+left outer join cloud_user_item_11_18_u_feature_4d_6d c4
+on a.user_id=c4.user_id 
+left outer join cloud_user_item_11_18_u_feature_5d_7d c5
+on a.user_id=c5.user_id 
+left outer join cloud_user_item_11_18_u_feature_6d_8d c6
+on a.user_id=c6.user_id 
+left outer join cloud_user_item_11_18_u_feature_7d_9d c7
+on a.user_id=c7.user_id 
+left outer join cloud_user_item_11_18_u_feature_8d_10d c8
+on a.user_id=c8.user_id;
+
+--2.3
+create table cloud_train_1118_1127_6
+as
+select a.*,
+d1.u_1d_5d_action1_1,d1.u_1d_5d_action2_1,d1.u_1d_5d_action3_1,d1.u_1d_5d_action4_1,d1.u_1d_5d_action1_2,d1.u_1d_5d_action2_2,d1.u_1d_5d_action3_2,d1.u_1d_5d_action4_2,d1.u_1d_5d_action1_3,d1.u_1d_5d_action2_3,d1.u_1d_5d_action3_3,d1.u_1d_5d_action4_3,
+d2.u_2d_6d_action1_1,d2.u_2d_6d_action2_1,d2.u_2d_6d_action3_1,d2.u_2d_6d_action4_1,d2.u_2d_6d_action1_2,d2.u_2d_6d_action2_2,d2.u_2d_6d_action3_2,d2.u_2d_6d_action4_2,d2.u_2d_6d_action1_3,d2.u_2d_6d_action2_3,d2.u_2d_6d_action3_3,d2.u_2d_6d_action4_3,
+d3.u_3d_7d_action1_1,d3.u_3d_7d_action2_1,d3.u_3d_7d_action3_1,d3.u_3d_7d_action4_1,d3.u_3d_7d_action1_2,d3.u_3d_7d_action2_2,d3.u_3d_7d_action3_2,d3.u_3d_7d_action4_2,d3.u_3d_7d_action1_3,d3.u_3d_7d_action2_3,d3.u_3d_7d_action3_3,d3.u_3d_7d_action4_3,
+d4.u_4d_8d_action1_1,d4.u_4d_8d_action2_1,d4.u_4d_8d_action3_1,d4.u_4d_8d_action4_1,d4.u_4d_8d_action1_2,d4.u_4d_8d_action2_2,d4.u_4d_8d_action3_2,d4.u_4d_8d_action4_2,d4.u_4d_8d_action1_3,d4.u_4d_8d_action2_3,d4.u_4d_8d_action3_3,d4.u_4d_8d_action4_3,
+d5.u_5d_9d_action1_1,d5.u_5d_9d_action2_1,d5.u_5d_9d_action3_1,d5.u_5d_9d_action4_1,d5.u_5d_9d_action1_2,d5.u_5d_9d_action2_2,d5.u_5d_9d_action3_2,d5.u_5d_9d_action4_2,d5.u_5d_9d_action1_3,d5.u_5d_9d_action2_3,d5.u_5d_9d_action3_3,d5.u_5d_9d_action4_3,
+d6.u_6d_10d_action1_1,d6.u_6d_10d_action2_1,d6.u_6d_10d_action3_1,d6.u_6d_10d_action4_1,d6.u_6d_10d_action1_2,d6.u_6d_10d_action2_2,d6.u_6d_10d_action3_2,d6.u_6d_10d_action4_2,d6.u_6d_10d_action1_3,d6.u_6d_10d_action2_3,d6.u_6d_10d_action3_3,d6.u_6d_10d_action4_3,
+e1.u_1d_7d_action1_1,e1.u_1d_7d_action2_1,e1.u_1d_7d_action3_1,e1.u_1d_7d_action4_1,e1.u_1d_7d_action1_2,e1.u_1d_7d_action2_2,e1.u_1d_7d_action3_2,e1.u_1d_7d_action4_2,e1.u_1d_7d_action1_3,e1.u_1d_7d_action2_3,e1.u_1d_7d_action3_3,e1.u_1d_7d_action4_3,
+e2.u_2d_8d_action1_1,e2.u_2d_8d_action2_1,e2.u_2d_8d_action3_1,e2.u_2d_8d_action4_1,e2.u_2d_8d_action1_2,e2.u_2d_8d_action2_2,e2.u_2d_8d_action3_2,e2.u_2d_8d_action4_2,e2.u_2d_8d_action1_3,e2.u_2d_8d_action2_3,e2.u_2d_8d_action3_3,e2.u_2d_8d_action4_3,
+e3.u_3d_9d_action1_1,e3.u_3d_9d_action2_1,e3.u_3d_9d_action3_1,e3.u_3d_9d_action4_1,e3.u_3d_9d_action1_2,e3.u_3d_9d_action2_2,e3.u_3d_9d_action3_2,e3.u_3d_9d_action4_2,e3.u_3d_9d_action1_3,e3.u_3d_9d_action2_3,e3.u_3d_9d_action3_3,e3.u_3d_9d_action4_3,
+e4.u_4d_10d_action1_1,e4.u_4d_10d_action2_1,e4.u_4d_10d_action3_1,e4.u_4d_10d_action4_1,e4.u_4d_10d_action1_2,e4.u_4d_10d_action2_2,e4.u_4d_10d_action3_2,e4.u_4d_10d_action4_2,e4.u_4d_10d_action1_3,e4.u_4d_10d_action2_3,e4.u_4d_10d_action3_3,e4.u_4d_10d_action4_3,
+f1.u_1d_10d_action1_1,f1.u_1d_10d_action2_1,f1.u_1d_10d_action3_1,f1.u_1d_10d_action4_1,f1.u_1d_10d_action1_2,f1.u_1d_10d_action2_2,f1.u_1d_10d_action3_2,f1.u_1d_10d_action4_2,f1.u_1d_10d_action1_3,f1.u_1d_10d_action2_3,f1.u_1d_10d_action3_3,f1.u_1d_10d_action4_3
+from cloud_user_item_11_18_label a
+left outer join cloud_user_item_11_18_u_feature_1d_5d d1
+on a.user_id=d1.user_id
+left outer join cloud_user_item_11_18_u_feature_2d_6d d2
+on a.user_id=d2.user_id
+left outer join cloud_user_item_11_18_u_feature_3d_7d d3
+on a.user_id=d3.user_id
+left outer join cloud_user_item_11_18_u_feature_4d_8d d4
+on a.user_id=d4.user_id
+left outer join cloud_user_item_11_18_u_feature_5d_9d d5
+on a.user_id=d5.user_id 
+left outer join cloud_user_item_11_18_u_feature_6d_10d d6
+on a.user_id=d6.user_id 
+left outer join cloud_user_item_11_18_u_feature_1d_7d e1
+on a.user_id=e1.user_id 
+left outer join cloud_user_item_11_18_u_feature_2d_8d e2
+on a.user_id=e2.user_id 
+left outer join cloud_user_item_11_18_u_feature_3d_9d e3
+on a.user_id=e3.user_id 
+left outer join cloud_user_item_11_18_u_feature_4d_10d e4
+on a.user_id=e4.user_id
+left outer join cloud_user_item_11_18_u_feature_1d_10d f1
+on a.user_id=f1.user_id ;

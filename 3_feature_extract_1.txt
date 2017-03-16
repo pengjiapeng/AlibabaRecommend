@@ -1,0 +1,395 @@
+--1.2统计11.18-11.27用户每3d的浏览/收藏/购物车/购买各个商品的行为次数
+--1.2.1统计统计11.18-11.20用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_1d_3d
+as
+select a.user_id,a.item_id,
+(b.ui_1d_action1+c.ui_2d_action1+d.ui_3d_action1) as ui_1d_3d_action1,
+(b.ui_1d_action2+c.ui_2d_action2+d.ui_3d_action2) as ui_1d_3d_action2,
+(b.ui_1d_action3+c.ui_2d_action3+d.ui_3d_action3) as ui_1d_3d_action3,
+(b.ui_1d_action4+c.ui_2d_action4+d.ui_3d_action4) as ui_1d_3d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_1d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_2d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_3d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.2统计统计11.19-11.21用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_2d_4d
+as
+select a.user_id,a.item_id,
+(b.ui_2d_action1+c.ui_3d_action1+d.ui_4d_action1) as ui_2d_4d_action1,
+(b.ui_2d_action2+c.ui_3d_action2+d.ui_4d_action2) as ui_2d_4d_action2,
+(b.ui_2d_action3+c.ui_3d_action3+d.ui_4d_action3) as ui_2d_4d_action3,
+(b.ui_2d_action4+c.ui_3d_action4+d.ui_4d_action4) as ui_2d_4d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_2d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_3d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_4d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.3统计统计11.20-11.22用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_3d_5d
+as
+select a.user_id,a.item_id,
+(b.ui_3d_action1+c.ui_4d_action1+d.ui_5d_action1) as ui_3d_5d_action1,
+(b.ui_3d_action2+c.ui_4d_action2+d.ui_5d_action2) as ui_3d_5d_action2,
+(b.ui_3d_action3+c.ui_4d_action3+d.ui_5d_action3) as ui_3d_5d_action3,
+(b.ui_3d_action4+c.ui_4d_action4+d.ui_5d_action4) as ui_3d_5d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_3d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_4d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_5d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.4统计统计11.21-11.23用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_4d_6d
+as
+select a.user_id,a.item_id,
+(b.ui_4d_action1+c.ui_5d_action1+d.ui_6d_action1) as ui_4d_6d_action1,
+(b.ui_4d_action2+c.ui_5d_action2+d.ui_6d_action2) as ui_4d_6d_action2,
+(b.ui_4d_action3+c.ui_5d_action3+d.ui_6d_action3) as ui_4d_6d_action3,
+(b.ui_4d_action4+c.ui_5d_action4+d.ui_6d_action4) as ui_4d_6d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_4d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_5d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_6d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.5统计统计11.22-11.24用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_5d_7d
+as
+select a.user_id,a.item_id,
+(b.ui_5d_action1+c.ui_6d_action1+d.ui_7d_action1) as ui_5d_7d_action1,
+(b.ui_5d_action2+c.ui_6d_action2+d.ui_7d_action2) as ui_5d_7d_action2,
+(b.ui_5d_action3+c.ui_6d_action3+d.ui_7d_action3) as ui_5d_7d_action3,
+(b.ui_5d_action4+c.ui_6d_action4+d.ui_7d_action4) as ui_5d_7d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_5d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_6d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_7d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.6统计统计11.23-11.25用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_6d_8d
+as
+select a.user_id,a.item_id,
+(b.ui_6d_action1+c.ui_7d_action1+d.ui_8d_action1) as ui_6d_8d_action1,
+(b.ui_6d_action2+c.ui_7d_action2+d.ui_8d_action2) as ui_6d_8d_action2,
+(b.ui_6d_action3+c.ui_7d_action3+d.ui_8d_action3) as ui_6d_8d_action3,
+(b.ui_6d_action4+c.ui_7d_action4+d.ui_8d_action4) as ui_6d_8d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_6d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_7d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_8d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.7统计统计11.24-11.26用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_7d_9d
+as
+select a.user_id,a.item_id,
+(b.ui_7d_action1+c.ui_8d_action1+d.ui_9d_action1) as ui_7d_9d_action1,
+(b.ui_7d_action2+c.ui_8d_action2+d.ui_9d_action2) as ui_7d_9d_action2,
+(b.ui_7d_action3+c.ui_8d_action3+d.ui_9d_action3) as ui_7d_9d_action3,
+(b.ui_7d_action4+c.ui_8d_action4+d.ui_9d_action4) as ui_7d_9d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_7d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_8d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_9d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.2.8统计统计11.25-11.27用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_8d_10d
+as
+select a.user_id,a.item_id,
+(b.ui_8d_action1+c.ui_9d_action1+d.ui_10d_action1) as ui_8d_10d_action1,
+(b.ui_8d_action2+c.ui_9d_action2+d.ui_10d_action2) as ui_8d_10d_action2,
+(b.ui_8d_action3+c.ui_9d_action3+d.ui_10d_action3) as ui_8d_10d_action3,
+(b.ui_8d_action4+c.ui_9d_action4+d.ui_10d_action4) as ui_8d_10d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_8d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_9d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_10d )d on a.user_id = d.user_id and a.item_id = d.item_id;
+
+--1.3统计11.18-11.27用户每5d的浏览/收藏/购物车/购买各个商品的行为次数
+--1.3.1统计统计11.18-11.22用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_1d_5d
+as
+select a.user_id,a.item_id,
+(b.ui_1d_action1+c.ui_2d_action1+d.ui_3d_action1+e.ui_4d_action1+f.ui_5d_action1) as ui_1d_5d_action1,
+(b.ui_1d_action2+c.ui_2d_action2+d.ui_3d_action2+e.ui_4d_action2+f.ui_5d_action2) as ui_1d_5d_action2,
+(b.ui_1d_action3+c.ui_2d_action3+d.ui_3d_action3+e.ui_4d_action3+f.ui_5d_action3) as ui_1d_5d_action3,
+(b.ui_1d_action4+c.ui_2d_action4+d.ui_3d_action4+e.ui_4d_action4+f.ui_5d_action4) as ui_1d_5d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_1d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_2d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_3d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_4d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_5d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.3.2统计统计11.19-11.23用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_2d_6d
+as
+select a.user_id,a.item_id,
+(b.ui_2d_action1+c.ui_3d_action1+d.ui_4d_action1+e.ui_5d_action1+f.ui_6d_action1) as ui_2d_6d_action1,
+(b.ui_2d_action2+c.ui_3d_action2+d.ui_4d_action2+e.ui_5d_action2+f.ui_6d_action2) as ui_2d_6d_action2,
+(b.ui_2d_action3+c.ui_3d_action3+d.ui_4d_action3+e.ui_5d_action3+f.ui_6d_action3) as ui_2d_6d_action3,
+(b.ui_2d_action4+c.ui_3d_action4+d.ui_4d_action4+e.ui_5d_action4+f.ui_6d_action4) as ui_2d_6d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_2d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_3d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_4d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_5d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_6d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.3.3统计统计11.20-11.24用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_3d_7d
+as
+select a.user_id,a.item_id,
+(b.ui_3d_action1+c.ui_4d_action1+d.ui_5d_action1+e.ui_6d_action1+f.ui_7d_action1) as ui_3d_7d_action1,
+(b.ui_3d_action2+c.ui_4d_action2+d.ui_5d_action2+e.ui_6d_action2+f.ui_7d_action2) as ui_3d_7d_action2,
+(b.ui_3d_action3+c.ui_4d_action3+d.ui_5d_action3+e.ui_6d_action3+f.ui_7d_action3) as ui_3d_7d_action3,
+(b.ui_3d_action4+c.ui_4d_action4+d.ui_5d_action4+e.ui_6d_action4+f.ui_7d_action4) as ui_3d_7d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_3d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_4d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_5d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_6d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_7d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.3.4统计统计11.21-11.25用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_4d_8d
+as
+select a.user_id,a.item_id,
+(b.ui_4d_action1+c.ui_5d_action1+d.ui_6d_action1+e.ui_7d_action1+f.ui_8d_action1) as ui_4d_8d_action1,
+(b.ui_4d_action2+c.ui_5d_action2+d.ui_6d_action2+e.ui_7d_action2+f.ui_8d_action2) as ui_4d_8d_action2,
+(b.ui_4d_action3+c.ui_5d_action3+d.ui_6d_action3+e.ui_7d_action3+f.ui_8d_action3) as ui_4d_8d_action3,
+(b.ui_4d_action4+c.ui_5d_action4+d.ui_6d_action4+e.ui_7d_action4+f.ui_8d_action4) as ui_4d_8d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_4d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_5d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_6d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_7d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_8d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.3.5统计统计11.22-11.26用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_5d_9d
+as
+select a.user_id,a.item_id,
+(b.ui_5d_action1+c.ui_6d_action1+d.ui_7d_action1+e.ui_8d_action1+f.ui_9d_action1) as ui_5d_9d_action1,
+(b.ui_5d_action2+c.ui_6d_action2+d.ui_7d_action2+e.ui_8d_action2+f.ui_9d_action2) as ui_5d_9d_action2,
+(b.ui_5d_action3+c.ui_6d_action3+d.ui_7d_action3+e.ui_8d_action3+f.ui_9d_action3) as ui_5d_9d_action3,
+(b.ui_5d_action4+c.ui_6d_action4+d.ui_7d_action4+e.ui_8d_action4+f.ui_9d_action4) as ui_5d_9d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_5d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_6d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_7d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_8d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_9d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.3.6统计统计11.23-11.27用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_6d_10d
+as
+select a.user_id,a.item_id,
+(b.ui_6d_action1+c.ui_7d_action1+d.ui_8d_action1+e.ui_9d_action1+f.ui_10d_action1) as ui_6d_10d_action1,
+(b.ui_6d_action2+c.ui_7d_action2+d.ui_8d_action2+e.ui_9d_action2+f.ui_10d_action2) as ui_6d_10d_action2,
+(b.ui_6d_action3+c.ui_7d_action3+d.ui_8d_action3+e.ui_9d_action3+f.ui_10d_action3) as ui_6d_10d_action3,
+(b.ui_6d_action4+c.ui_7d_action4+d.ui_8d_action4+e.ui_9d_action4+f.ui_10d_action4) as ui_6d_10d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_6d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_7d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_8d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_9d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_10d )f on a.user_id = f.user_id and a.item_id = f.item_id;
+
+--1.4统计11.18-11.27用户每7d的浏览/收藏/购物车/购买各个商品的行为次数
+--1.4.1统计统计11.18-11.24用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_1d_7d
+as
+select a.user_id,a.item_id,
+(b.ui_1d_action1+c.ui_2d_action1+d.ui_3d_action1+e.ui_4d_action1+f.ui_5d_action1+g.ui_6d_action1+h.ui_7d_action1) as ui_1d_7d_action1,
+(b.ui_1d_action2+c.ui_2d_action2+d.ui_3d_action2+e.ui_4d_action2+f.ui_5d_action2+g.ui_6d_action2+h.ui_7d_action2) as ui_1d_7d_action2,
+(b.ui_1d_action3+c.ui_2d_action3+d.ui_3d_action3+e.ui_4d_action3+f.ui_5d_action3+g.ui_6d_action3+h.ui_7d_action3) as ui_1d_7d_action3,
+(b.ui_1d_action4+c.ui_2d_action4+d.ui_3d_action4+e.ui_4d_action4+f.ui_5d_action4+g.ui_6d_action4+h.ui_7d_action4) as ui_1d_7d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_1d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_2d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_3d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_4d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_5d )f on a.user_id = f.user_id and a.item_id = f.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_6d )g on a.user_id = g.user_id and a.item_id = g.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_7d )h on a.user_id = h.user_id and a.item_id = h.item_id;
+
+--1.4.2统计统计11.19-11.25用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_2d_8d
+as
+select a.user_id,a.item_id,
+(b.ui_2d_action1+c.ui_3d_action1+d.ui_4d_action1+e.ui_5d_action1+f.ui_6d_action1+g.ui_7d_action1+h.ui_8d_action1) as ui_2d_8d_action1,
+(b.ui_2d_action2+c.ui_3d_action2+d.ui_4d_action2+e.ui_5d_action2+f.ui_6d_action2+g.ui_7d_action2+h.ui_8d_action2) as ui_2d_8d_action2,
+(b.ui_2d_action3+c.ui_3d_action3+d.ui_4d_action3+e.ui_5d_action3+f.ui_6d_action3+g.ui_7d_action3+h.ui_8d_action3) as ui_2d_8d_action3,
+(b.ui_2d_action4+c.ui_3d_action4+d.ui_4d_action4+e.ui_5d_action4+f.ui_6d_action4+g.ui_7d_action4+h.ui_8d_action4) as ui_2d_8d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_2d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_3d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_4d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_5d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_6d )f on a.user_id = f.user_id and a.item_id = f.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_7d )g on a.user_id = g.user_id and a.item_id = g.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_8d )h on a.user_id = h.user_id and a.item_id = h.item_id;
+
+--1.4.3统计统计11.20-11.26用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_3d_9d
+as
+select a.user_id,a.item_id,
+(b.ui_3d_action1+c.ui_4d_action1+d.ui_5d_action1+e.ui_6d_action1+f.ui_7d_action1+g.ui_8d_action1+h.ui_9d_action1) as ui_3d_9d_action1,
+(b.ui_3d_action2+c.ui_4d_action2+d.ui_5d_action2+e.ui_6d_action2+f.ui_7d_action2+g.ui_8d_action2+h.ui_9d_action2) as ui_3d_9d_action2,
+(b.ui_3d_action3+c.ui_4d_action3+d.ui_5d_action3+e.ui_6d_action3+f.ui_7d_action3+g.ui_8d_action3+h.ui_9d_action3) as ui_3d_9d_action3,
+(b.ui_3d_action4+c.ui_4d_action4+d.ui_5d_action4+e.ui_6d_action4+f.ui_7d_action4+g.ui_8d_action4+h.ui_9d_action4) as ui_3d_9d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_3d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_4d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_5d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_6d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_7d )f on a.user_id = f.user_id and a.item_id = f.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_8d )g on a.user_id = g.user_id and a.item_id = g.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_9d )h on a.user_id = h.user_id and a.item_id = h.item_id;
+
+--1.4.4统计统计11.21-11.27用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_4d_10d
+as
+select a.user_id,a.item_id,
+(b.ui_4d_action1+c.ui_5d_action1+d.ui_6d_action1+e.ui_7d_action1+f.ui_8d_action1+g.ui_9d_action1+h.ui_10d_action1) as ui_4d_10d_action1,
+(b.ui_4d_action2+c.ui_5d_action2+d.ui_6d_action2+e.ui_7d_action2+f.ui_8d_action2+g.ui_9d_action2+h.ui_10d_action2) as ui_4d_10d_action2,
+(b.ui_4d_action3+c.ui_5d_action3+d.ui_6d_action3+e.ui_7d_action3+f.ui_8d_action3+g.ui_9d_action3+h.ui_10d_action3) as ui_4d_10d_action3,
+(b.ui_4d_action4+c.ui_5d_action4+d.ui_6d_action4+e.ui_7d_action4+f.ui_8d_action4+g.ui_9d_action4+h.ui_10d_action4) as ui_4d_10d_action4
+from
+cloud_user_item_11_18_label a
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_4d )b on a.user_id = b.user_id and a.item_id = b.item_id
+left outer join 
+(select * from cloud_user_item_11_18_ui_feature_5d )c on a.user_id = c.user_id and a.item_id = c.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_6d )d on a.user_id = d.user_id and a.item_id = d.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_7d )e on a.user_id = e.user_id and a.item_id = e.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_8d )f on a.user_id = f.user_id and a.item_id = f.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_9d )g on a.user_id = g.user_id and a.item_id = g.item_id
+left outer join
+(select * from cloud_user_item_11_18_ui_feature_10d )h on a.user_id = h.user_id and a.item_id = h.item_id;
+
+--1.5统计11.18-11.27用户的浏览/收藏/购物车/购买各个商品的行为次数
+create table cloud_user_item_11_18_ui_feature_1d_10d
+as
+select a.user_id,a.item_id,
+case when b.action1 is null then 0 else b.action1 end as ui_1d_10d_action1,
+case when c.action2 is null then 0 else c.action2 end as ui_1d_10d_action2,
+case when d.action3 is null then 0 else d.action3 end as ui_1d_10d_action3,
+case when e.action4 is null then 0 else e.action4 end as ui_1d_10d_action4
+from
+cloud_user_item_11_18_label a 
+left outer join 
+(select user_id,item_id,sum(case when behavior_type=1 then 1 else 0 end) as action1 
+from cloud_user_train_clean_11_18 
+group by user_id,item_id)b 
+on a.user_id=b.user_id and a.item_id = b.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=2 then 1 else 0 end) as action2
+from cloud_user_train_clean_11_18 
+group by user_id,item_id)c
+on a.user_id=c.user_id and a.item_id = c.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=3 then 1 else 0 end) as action3
+from cloud_user_train_clean_11_18 
+group by user_id,item_id)d
+on a.user_id=d.user_id and a.item_id = d.item_id
+left outer join
+(select user_id,item_id,sum(case when behavior_type=4 then 1 else 0 end) as action4
+from cloud_user_train_clean_11_18 
+group by user_id,item_id)e
+on a.user_id=e.user_id and a.item_id = e.item_id;

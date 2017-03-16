@@ -1,0 +1,23 @@
+select colname from cloud2_lr_importance where importance>0.0332;
+
+create table cloud_train_1118_1127_pos
+as
+select * from cloud_train_1118_1127
+where label=1;
+
+create table cloud_train_1118_1127_inpos
+as
+select * from cloud_train_1118_1127
+where label=0;
+
+select count(*) from cloud_train_1118_1127_pos;
+select count(*) from cloud_train_1118_1127_inpos;
+
+drop table tianchi_mobile_recommendation_predict;
+create table tianchi_mobile_recommendation_predict
+as 
+select user_id,item_id from 
+cloud1_recommend 
+where prediction_result=1;
+
+select count(*) from tianchi_mobile_recommendation_predict;

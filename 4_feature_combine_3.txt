@@ -1,0 +1,124 @@
+--特征最终整合
+create table cloud_train_1118_1127
+as
+select a.*,
+a1.ui_1d_action1,a1.ui_1d_action2,a1.ui_1d_action3,a1.ui_1d_action4,
+a1.ui_2d_action1,a1.ui_2d_action2,a1.ui_2d_action3,a1.ui_2d_action4,
+a1.ui_3d_action1,a1.ui_3d_action2,a1.ui_3d_action3,a1.ui_3d_action4,
+a1.ui_4d_action1,a1.ui_4d_action2,a1.ui_4d_action3,a1.ui_4d_action4,
+a1.ui_5d_action1,a1.ui_5d_action2,a1.ui_5d_action3,a1.ui_5d_action4,
+a1.ui_6d_action1,a1.ui_6d_action2,a1.ui_6d_action3,a1.ui_6d_action4,
+a1.ui_7d_action1,a1.ui_7d_action2,a1.ui_7d_action3,a1.ui_7d_action4,
+a1.ui_8d_action1,a1.ui_8d_action2,a1.ui_8d_action3,a1.ui_8d_action4,
+a1.ui_9d_action1,a1.ui_9d_action2,a1.ui_9d_action3,a1.ui_9d_action4,
+a1.ui_10d_action1,a1.ui_10d_action2,a1.ui_10d_action3,a1.ui_10d_action4,
+
+a2.ui_1d_3d_action1,a2.ui_1d_3d_action2,a2.ui_1d_3d_action3,a2.ui_1d_3d_action4,
+a2.ui_2d_4d_action1,a2.ui_2d_4d_action2,a2.ui_2d_4d_action3,a2.ui_2d_4d_action4,
+a2.ui_3d_5d_action1,a2.ui_3d_5d_action2,a2.ui_3d_5d_action3,a2.ui_3d_5d_action4,
+a2.ui_4d_6d_action1,a2.ui_4d_6d_action2,a2.ui_4d_6d_action3,a2.ui_4d_6d_action4,
+a2.ui_5d_7d_action1,a2.ui_5d_7d_action2,a2.ui_5d_7d_action3,a2.ui_5d_7d_action4,
+a2.ui_6d_8d_action1,a2.ui_6d_8d_action2,a2.ui_6d_8d_action3,a2.ui_6d_8d_action4,
+a2.ui_7d_9d_action1,a2.ui_7d_9d_action2,a2.ui_7d_9d_action3,a2.ui_7d_9d_action4,
+a2.ui_8d_10d_action1,a2.ui_8d_10d_action2,a2.ui_8d_10d_action3,a2.ui_8d_10d_action4,
+
+a3.ui_1d_5d_action1,a3.ui_1d_5d_action2,a3.ui_1d_5d_action3,a3.ui_1d_5d_action4,
+a3.ui_2d_6d_action1,a3.ui_2d_6d_action2,a3.ui_2d_6d_action3,a3.ui_2d_6d_action4,
+a3.ui_3d_7d_action1,a3.ui_3d_7d_action2,a3.ui_3d_7d_action3,a3.ui_3d_7d_action4,
+a3.ui_4d_8d_action1,a3.ui_4d_8d_action2,a3.ui_4d_8d_action3,a3.ui_4d_8d_action4,
+a3.ui_5d_9d_action1,a3.ui_5d_9d_action2,a3.ui_5d_9d_action3,a3.ui_5d_9d_action4,
+a3.ui_6d_10d_action1,a3.ui_6d_10d_action2,a3.ui_6d_10d_action3,a3.ui_6d_10d_action4,
+a3.ui_1d_7d_action1,a3.ui_1d_7d_action2,a3.ui_1d_7d_action3,a3.ui_1d_7d_action4,
+a3.ui_2d_8d_action1,a3.ui_2d_8d_action2,a3.ui_2d_8d_action3,a3.ui_2d_8d_action4,
+a3.ui_3d_9d_action1,a3.ui_3d_9d_action2,a3.ui_3d_9d_action3,a3.ui_3d_9d_action4,
+a3.ui_4d_10d_action1,a3.ui_4d_10d_action2,a3.ui_4d_10d_action3,a3.ui_4d_10d_action4,
+a3.ui_1d_10d_action1,a3.ui_1d_10d_action2,a3.ui_1d_10d_action3,a3.ui_1d_10d_action4,
+
+a4.u_1d_action1_1,a4.u_1d_action1_2,a4.u_1d_action1_3,a4.u_1d_action2_1,a4.u_1d_action2_2,a4.u_1d_action2_3,a4.u_1d_action3_1,a4.u_1d_action3_2,a4.u_1d_action3_3,a4.u_1d_action4_1,a4.u_1d_action4_2,a4.u_1d_action4_3,
+a4.u_2d_action1_1,a4.u_2d_action1_2,a4.u_2d_action1_3,a4.u_2d_action2_1,a4.u_2d_action2_2,a4.u_2d_action2_3,a4.u_2d_action3_1,a4.u_2d_action3_2,a4.u_2d_action3_3,a4.u_2d_action4_1,a4.u_2d_action4_2,a4.u_2d_action4_3,
+a4.u_3d_action1_1,a4.u_3d_action1_2,a4.u_3d_action1_3,a4.u_3d_action2_1,a4.u_3d_action2_2,a4.u_3d_action2_3,a4.u_3d_action3_1,a4.u_3d_action3_2,a4.u_3d_action3_3,a4.u_3d_action4_1,a4.u_3d_action4_2,a4.u_3d_action4_3,
+a4.u_4d_action1_1,a4.u_4d_action1_2,a4.u_4d_action1_3,a4.u_4d_action2_1,a4.u_4d_action2_2,a4.u_4d_action2_3,a4.u_4d_action3_1,a4.u_4d_action3_2,a4.u_4d_action3_3,a4.u_4d_action4_1,a4.u_4d_action4_2,a4.u_4d_action4_3,
+a4.u_5d_action1_1,a4.u_5d_action1_2,a4.u_5d_action1_3,a4.u_5d_action2_1,a4.u_5d_action2_2,a4.u_5d_action2_3,a4.u_5d_action3_1,a4.u_5d_action3_2,a4.u_5d_action3_3,a4.u_5d_action4_1,a4.u_5d_action4_2,a4.u_5d_action4_3,
+a4.u_6d_action1_1,a4.u_6d_action1_2,a4.u_6d_action1_3,a4.u_6d_action2_1,a4.u_6d_action2_2,a4.u_6d_action2_3,a4.u_6d_action3_1,a4.u_6d_action3_2,a4.u_6d_action3_3,a4.u_6d_action4_1,a4.u_6d_action4_2,a4.u_6d_action4_3,
+a4.u_7d_action1_1,a4.u_7d_action1_2,a4.u_7d_action1_3,a4.u_7d_action2_1,a4.u_7d_action2_2,a4.u_7d_action2_3,a4.u_7d_action3_1,a4.u_7d_action3_2,a4.u_7d_action3_3,a4.u_7d_action4_1,a4.u_7d_action4_2,a4.u_7d_action4_3,
+a4.u_8d_action1_1,a4.u_8d_action1_2,a4.u_8d_action1_3,a4.u_8d_action2_1,a4.u_8d_action2_2,a4.u_8d_action2_3,a4.u_8d_action3_1,a4.u_8d_action3_2,a4.u_8d_action3_3,a4.u_8d_action4_1,a4.u_8d_action4_2,a4.u_8d_action4_3,
+a4.u_9d_action1_1,a4.u_9d_action1_2,a4.u_9d_action1_3,a4.u_9d_action2_1,a4.u_9d_action2_2,a4.u_9d_action2_3,a4.u_9d_action3_1,a4.u_9d_action3_2,a4.u_9d_action3_3,a4.u_9d_action4_1,a4.u_9d_action4_2,a4.u_9d_action4_3,
+a4.u_10d_action1_1,a4.u_10d_action1_2,a4.u_10d_action1_3,a4.u_10d_action2_1,a4.u_10d_action2_2,a4.u_10d_action2_3,a4.u_10d_action3_1,a4.u_10d_action3_2,a4.u_10d_action3_3,a4.u_10d_action4_1,a4.u_10d_action4_2,a4.u_10d_action4_3,
+
+a5.u_1d_3d_action1_1,a5.u_1d_3d_action1_2,a5.u_1d_3d_action1_3,a5.u_1d_3d_action2_1,a5.u_1d_3d_action2_2,a5.u_1d_3d_action2_3,a5.u_1d_3d_action3_1,a5.u_1d_3d_action3_2,a5.u_1d_3d_action3_3,a5.u_1d_3d_action4_1,a5.u_1d_3d_action4_2,a5.u_1d_3d_action4_3,
+a5.u_2d_4d_action1_1,a5.u_2d_4d_action1_2,a5.u_2d_4d_action1_3,a5.u_2d_4d_action2_1,a5.u_2d_4d_action2_2,a5.u_2d_4d_action2_3,a5.u_2d_4d_action3_1,a5.u_2d_4d_action3_2,a5.u_2d_4d_action3_3,a5.u_2d_4d_action4_1,a5.u_2d_4d_action4_2,a5.u_2d_4d_action4_3,
+a5.u_3d_5d_action1_1,a5.u_3d_5d_action1_2,a5.u_3d_5d_action1_3,a5.u_3d_5d_action2_1,a5.u_3d_5d_action2_2,a5.u_3d_5d_action2_3,a5.u_3d_5d_action3_1,a5.u_3d_5d_action3_2,a5.u_3d_5d_action3_3,a5.u_3d_5d_action4_1,a5.u_3d_5d_action4_2,a5.u_3d_5d_action4_3,
+a5.u_4d_6d_action1_1,a5.u_4d_6d_action1_2,a5.u_4d_6d_action1_3,a5.u_4d_6d_action2_1,a5.u_4d_6d_action2_2,a5.u_4d_6d_action2_3,a5.u_4d_6d_action3_1,a5.u_4d_6d_action3_2,a5.u_4d_6d_action3_3,a5.u_4d_6d_action4_1,a5.u_4d_6d_action4_2,a5.u_4d_6d_action4_3,
+a5.u_5d_7d_action1_1,a5.u_5d_7d_action1_2,a5.u_5d_7d_action1_3,a5.u_5d_7d_action2_1,a5.u_5d_7d_action2_2,a5.u_5d_7d_action2_3,a5.u_5d_7d_action3_1,a5.u_5d_7d_action3_2,a5.u_5d_7d_action3_3,a5.u_5d_7d_action4_1,a5.u_5d_7d_action4_2,a5.u_5d_7d_action4_3,
+a5.u_6d_8d_action1_1,a5.u_6d_8d_action1_2,a5.u_6d_8d_action1_3,a5.u_6d_8d_action2_1,a5.u_6d_8d_action2_2,a5.u_6d_8d_action2_3,a5.u_6d_8d_action3_1,a5.u_6d_8d_action3_2,a5.u_6d_8d_action3_3,a5.u_6d_8d_action4_1,a5.u_6d_8d_action4_2,a5.u_6d_8d_action4_3,
+a5.u_7d_9d_action1_1,a5.u_7d_9d_action1_2,a5.u_7d_9d_action1_3,a5.u_7d_9d_action2_1,a5.u_7d_9d_action2_2,a5.u_7d_9d_action2_3,a5.u_7d_9d_action3_1,a5.u_7d_9d_action3_2,a5.u_7d_9d_action3_3,a5.u_7d_9d_action4_1,a5.u_7d_9d_action4_2,a5.u_7d_9d_action4_3,
+a5.u_8d_10d_action1_1,a5.u_8d_10d_action1_2,a5.u_8d_10d_action1_3,a5.u_8d_10d_action2_1,a5.u_8d_10d_action2_2,a5.u_8d_10d_action2_3,a5.u_8d_10d_action3_1,a5.u_8d_10d_action3_2,a5.u_8d_10d_action3_3,a5.u_8d_10d_action4_1,a5.u_8d_10d_action4_2,a5.u_8d_10d_action4_3,
+
+a6.u_1d_5d_action1_1,a6.u_1d_5d_action2_1,a6.u_1d_5d_action3_1,a6.u_1d_5d_action4_1,a6.u_1d_5d_action1_2,a6.u_1d_5d_action2_2,a6.u_1d_5d_action3_2,a6.u_1d_5d_action4_2,a6.u_1d_5d_action1_3,a6.u_1d_5d_action2_3,a6.u_1d_5d_action3_3,a6.u_1d_5d_action4_3,
+a6.u_2d_6d_action1_1,a6.u_2d_6d_action2_1,a6.u_2d_6d_action3_1,a6.u_2d_6d_action4_1,a6.u_2d_6d_action1_2,a6.u_2d_6d_action2_2,a6.u_2d_6d_action3_2,a6.u_2d_6d_action4_2,a6.u_2d_6d_action1_3,a6.u_2d_6d_action2_3,a6.u_2d_6d_action3_3,a6.u_2d_6d_action4_3,
+a6.u_3d_7d_action1_1,a6.u_3d_7d_action2_1,a6.u_3d_7d_action3_1,a6.u_3d_7d_action4_1,a6.u_3d_7d_action1_2,a6.u_3d_7d_action2_2,a6.u_3d_7d_action3_2,a6.u_3d_7d_action4_2,a6.u_3d_7d_action1_3,a6.u_3d_7d_action2_3,a6.u_3d_7d_action3_3,a6.u_3d_7d_action4_3,
+a6.u_4d_8d_action1_1,a6.u_4d_8d_action2_1,a6.u_4d_8d_action3_1,a6.u_4d_8d_action4_1,a6.u_4d_8d_action1_2,a6.u_4d_8d_action2_2,a6.u_4d_8d_action3_2,a6.u_4d_8d_action4_2,a6.u_4d_8d_action1_3,a6.u_4d_8d_action2_3,a6.u_4d_8d_action3_3,a6.u_4d_8d_action4_3,
+a6.u_5d_9d_action1_1,a6.u_5d_9d_action2_1,a6.u_5d_9d_action3_1,a6.u_5d_9d_action4_1,a6.u_5d_9d_action1_2,a6.u_5d_9d_action2_2,a6.u_5d_9d_action3_2,a6.u_5d_9d_action4_2,a6.u_5d_9d_action1_3,a6.u_5d_9d_action2_3,a6.u_5d_9d_action3_3,a6.u_5d_9d_action4_3,
+a6.u_6d_10d_action1_1,a6.u_6d_10d_action2_1,a6.u_6d_10d_action3_1,a6.u_6d_10d_action4_1,a6.u_6d_10d_action1_2,a6.u_6d_10d_action2_2,a6.u_6d_10d_action3_2,a6.u_6d_10d_action4_2,a6.u_6d_10d_action1_3,a6.u_6d_10d_action2_3,a6.u_6d_10d_action3_3,a6.u_6d_10d_action4_3,
+a6.u_1d_7d_action1_1,a6.u_1d_7d_action2_1,a6.u_1d_7d_action3_1,a6.u_1d_7d_action4_1,a6.u_1d_7d_action1_2,a6.u_1d_7d_action2_2,a6.u_1d_7d_action3_2,a6.u_1d_7d_action4_2,a6.u_1d_7d_action1_3,a6.u_1d_7d_action2_3,a6.u_1d_7d_action3_3,a6.u_1d_7d_action4_3,
+a6.u_2d_8d_action1_1,a6.u_2d_8d_action2_1,a6.u_2d_8d_action3_1,a6.u_2d_8d_action4_1,a6.u_2d_8d_action1_2,a6.u_2d_8d_action2_2,a6.u_2d_8d_action3_2,a6.u_2d_8d_action4_2,a6.u_2d_8d_action1_3,a6.u_2d_8d_action2_3,a6.u_2d_8d_action3_3,a6.u_2d_8d_action4_3,
+a6.u_3d_9d_action1_1,a6.u_3d_9d_action2_1,a6.u_3d_9d_action3_1,a6.u_3d_9d_action4_1,a6.u_3d_9d_action1_2,a6.u_3d_9d_action2_2,a6.u_3d_9d_action3_2,a6.u_3d_9d_action4_2,a6.u_3d_9d_action1_3,a6.u_3d_9d_action2_3,a6.u_3d_9d_action3_3,a6.u_3d_9d_action4_3,
+a6.u_4d_10d_action1_1,a6.u_4d_10d_action2_1,a6.u_4d_10d_action3_1,a6.u_4d_10d_action4_1,a6.u_4d_10d_action1_2,a6.u_4d_10d_action2_2,a6.u_4d_10d_action3_2,a6.u_4d_10d_action4_2,a6.u_4d_10d_action1_3,a6.u_4d_10d_action2_3,a6.u_4d_10d_action3_3,a6.u_4d_10d_action4_3,
+a6.u_1d_10d_action1_1,a6.u_1d_10d_action2_1,a6.u_1d_10d_action3_1,a6.u_1d_10d_action4_1,a6.u_1d_10d_action1_2,a6.u_1d_10d_action2_2,a6.u_1d_10d_action3_2,a6.u_1d_10d_action4_2,a6.u_1d_10d_action1_3,a6.u_1d_10d_action2_3,a6.u_1d_10d_action3_3,a6.u_1d_10d_action4_3,
+
+a7.i_1d_action1_1,a7.i_1d_action1_2,a7.i_1d_action2_1,a7.i_1d_action2_2,a7.i_1d_action3_1,a7.i_1d_action3_2,a7.i_1d_action4_1,a7.i_1d_action4_2,
+a7.i_2d_action1_1,a7.i_2d_action1_2,a7.i_2d_action2_1,a7.i_2d_action2_2,a7.i_2d_action3_1,a7.i_2d_action3_2,a7.i_2d_action4_1,a7.i_2d_action4_2,
+a7.i_3d_action1_1,a7.i_3d_action1_2,a7.i_3d_action2_1,a7.i_3d_action2_2,a7.i_3d_action3_1,a7.i_3d_action3_2,a7.i_3d_action4_1,a7.i_3d_action4_2,
+a7.i_4d_action1_1,a7.i_4d_action1_2,a7.i_4d_action2_1,a7.i_4d_action2_2,a7.i_4d_action3_1,a7.i_4d_action3_2,a7.i_4d_action4_1,a7.i_4d_action4_2,
+a7.i_5d_action1_1,a7.i_5d_action1_2,a7.i_5d_action2_1,a7.i_5d_action2_2,a7.i_5d_action3_1,a7.i_5d_action3_2,a7.i_5d_action4_1,a7.i_5d_action4_2,
+a7.i_6d_action1_1,a7.i_6d_action1_2,a7.i_6d_action2_1,a7.i_6d_action2_2,a7.i_6d_action3_1,a7.i_6d_action3_2,a7.i_6d_action4_1,a7.i_6d_action4_2,
+a7.i_7d_action1_1,a7.i_7d_action1_2,a7.i_7d_action2_1,a7.i_7d_action2_2,a7.i_7d_action3_1,a7.i_7d_action3_2,a7.i_7d_action4_1,a7.i_7d_action4_2,
+a7.i_8d_action1_1,a7.i_8d_action1_2,a7.i_8d_action2_1,a7.i_8d_action2_2,a7.i_8d_action3_1,a7.i_8d_action3_2,a7.i_8d_action4_1,a7.i_8d_action4_2,
+a7.i_9d_action1_1,a7.i_9d_action1_2,a7.i_9d_action2_1,a7.i_9d_action2_2,a7.i_9d_action3_1,a7.i_9d_action3_2,a7.i_9d_action4_1,a7.i_9d_action4_2,
+a7.i_10d_action1_1,a7.i_10d_action1_2,a7.i_10d_action2_1,a7.i_10d_action2_2,a7.i_10d_action3_1,a7.i_10d_action3_2,a7.i_10d_action4_1,a7.i_10d_action4_2,
+
+a8.i_1d_3d_action1_1,a8.i_1d_3d_action1_2,a8.i_1d_3d_action2_1,a8.i_1d_3d_action2_2,a8.i_1d_3d_action3_1,a8.i_1d_3d_action3_2,a8.i_1d_3d_action4_1,a8.i_1d_3d_action4_2,
+a8.i_2d_4d_action1_1,a8.i_2d_4d_action1_2,a8.i_2d_4d_action2_1,a8.i_2d_4d_action2_2,a8.i_2d_4d_action3_1,a8.i_2d_4d_action3_2,a8.i_2d_4d_action4_1,a8.i_2d_4d_action4_2,
+a8.i_3d_5d_action1_1,a8.i_3d_5d_action1_2,a8.i_3d_5d_action2_1,a8.i_3d_5d_action2_2,a8.i_3d_5d_action3_1,a8.i_3d_5d_action3_2,a8.i_3d_5d_action4_1,a8.i_3d_5d_action4_2,
+a8.i_4d_6d_action1_1,a8.i_4d_6d_action1_2,a8.i_4d_6d_action2_1,a8.i_4d_6d_action2_2,a8.i_4d_6d_action3_1,a8.i_4d_6d_action3_2,a8.i_4d_6d_action4_1,a8.i_4d_6d_action4_2,
+a8.i_5d_7d_action1_1,a8.i_5d_7d_action1_2,a8.i_5d_7d_action2_1,a8.i_5d_7d_action2_2,a8.i_5d_7d_action3_1,a8.i_5d_7d_action3_2,a8.i_5d_7d_action4_1,a8.i_5d_7d_action4_2,
+a8.i_6d_8d_action1_1,a8.i_6d_8d_action1_2,a8.i_6d_8d_action2_1,a8.i_6d_8d_action2_2,a8.i_6d_8d_action3_1,a8.i_6d_8d_action3_2,a8.i_6d_8d_action4_1,a8.i_6d_8d_action4_2,
+a8.i_7d_9d_action1_1,a8.i_7d_9d_action1_2,a8.i_7d_9d_action2_1,a8.i_7d_9d_action2_2,a8.i_7d_9d_action3_1,a8.i_7d_9d_action3_2,a8.i_7d_9d_action4_1,a8.i_7d_9d_action4_2,
+a8.i_8d_10d_action1_1,a8.i_8d_10d_action1_2,a8.i_8d_10d_action2_1,a8.i_8d_10d_action2_2,a8.i_8d_10d_action3_1,a8.i_8d_10d_action3_2,a8.i_8d_10d_action4_1,a8.i_8d_10d_action4_2,
+
+a9.i_1d_5d_action1_1,a9.i_1d_5d_action2_1,a9.i_1d_5d_action3_1,a9.i_1d_5d_action4_1,a9.i_1d_5d_action1_2,a9.i_1d_5d_action2_2,a9.i_1d_5d_action3_2,a9.i_1d_5d_action4_2,
+a9.i_2d_6d_action1_1,a9.i_2d_6d_action2_1,a9.i_2d_6d_action3_1,a9.i_2d_6d_action4_1,a9.i_2d_6d_action1_2,a9.i_2d_6d_action2_2,a9.i_2d_6d_action3_2,a9.i_2d_6d_action4_2,
+a9.i_3d_7d_action1_1,a9.i_3d_7d_action2_1,a9.i_3d_7d_action3_1,a9.i_3d_7d_action4_1,a9.i_3d_7d_action1_2,a9.i_3d_7d_action2_2,a9.i_3d_7d_action3_2,a9.i_3d_7d_action4_2,
+a9.i_4d_8d_action1_1,a9.i_4d_8d_action2_1,a9.i_4d_8d_action3_1,a9.i_4d_8d_action4_1,a9.i_4d_8d_action1_2,a9.i_4d_8d_action2_2,a9.i_4d_8d_action3_2,a9.i_4d_8d_action4_2,
+a9.i_5d_9d_action1_1,a9.i_5d_9d_action2_1,a9.i_5d_9d_action3_1,a9.i_5d_9d_action4_1,a9.i_5d_9d_action1_2,a9.i_5d_9d_action2_2,a9.i_5d_9d_action3_2,a9.i_5d_9d_action4_2,
+a9.i_6d_10d_action1_1,a9.i_6d_10d_action2_1,a9.i_6d_10d_action3_1,a9.i_6d_10d_action4_1,a9.i_6d_10d_action1_2,a9.i_6d_10d_action2_2,a9.i_6d_10d_action3_2,a9.i_6d_10d_action4_2,
+a9.i_1d_7d_action1_1,a9.i_1d_7d_action2_1,a9.i_1d_7d_action3_1,a9.i_1d_7d_action4_1,a9.i_1d_7d_action1_2,a9.i_1d_7d_action2_2,a9.i_1d_7d_action3_2,a9.i_1d_7d_action4_2,
+a9.i_2d_8d_action1_1,a9.i_2d_8d_action2_1,a9.i_2d_8d_action3_1,a9.i_2d_8d_action4_1,a9.i_2d_8d_action1_2,a9.i_2d_8d_action2_2,a9.i_2d_8d_action3_2,a9.i_2d_8d_action4_2,
+a9.i_3d_9d_action1_1,a9.i_3d_9d_action2_1,a9.i_3d_9d_action3_1,a9.i_3d_9d_action4_1,a9.i_3d_9d_action1_2,a9.i_3d_9d_action2_2,a9.i_3d_9d_action3_2,a9.i_3d_9d_action4_2,
+a9.i_4d_10d_action1_1,a9.i_4d_10d_action2_1,a9.i_4d_10d_action3_1,a9.i_4d_10d_action4_1,a9.i_4d_10d_action1_2,a9.i_4d_10d_action2_2,a9.i_4d_10d_action3_2,a9.i_4d_10d_action4_2,
+a9.i_1d_10d_action1_1,a9.i_1d_10d_action2_1,a9.i_1d_10d_action3_1,a9.i_1d_10d_action4_1,a9.i_1d_10d_action1_2,a9.i_1d_10d_action2_2,a9.i_1d_10d_action3_2,a9.i_1d_10d_action4_2,
+
+a10.action1_rank,a10.action3_rank,a10.action4_rank,a10.sum_rank
+
+from 
+cloud_user_item_11_18_label a
+left outer join cloud_train_1118_1127_1 a1
+on a.user_id = a1.user_id and a.item_id = a1.item_id
+left outer join cloud_train_1118_1127_2 a2
+on a.user_id = a2.user_id and a.item_id = a2.item_id
+left outer join cloud_train_1118_1127_3 a3
+on a.user_id = a3.user_id and a.item_id = a3.item_id
+left outer join cloud_train_1118_1127_4 a4
+on a.user_id = a4.user_id and a.item_id = a4.item_id
+left outer join cloud_train_1118_1127_5 a5
+on a.user_id = a5.user_id and a.item_id = a5.item_id
+left outer join cloud_train_1118_1127_6 a6
+on a.user_id = a6.user_id and a.item_id = a6.item_id
+left outer join cloud_train_1118_1127_7 a7
+on a.user_id = a7.user_id and a.item_id = a7.item_id
+left outer join cloud_train_1118_1127_8 a8
+on a.user_id = a8.user_id and a.item_id = a8.item_id
+left outer join cloud_train_1118_1127_9 a9
+on a.user_id = a9.user_id and a.item_id = a9.item_id
+left outer join cloud_user_item_11_18_ui_rank1_feature a10
+on a.user_id = a10.user_id and a.item_id = a10.item_id;
